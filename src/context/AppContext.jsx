@@ -276,6 +276,12 @@ export function AppProvider({ children }) {
 
   const logout = () => dispatch({ type: "LOGOUT" });
 
+  const clearCart = () => dispatch({ type: "CLEAR_CART" });
+
+  const addToCart = (item) => dispatch({ type: "ADD_TO_CART", payload: item });
+
+  const removeFromCart = (itemId) => dispatch({ type: "REMOVE_FROM_CART", payload: itemId });
+
   const notify = (message, type = "success") => {
     dispatch({ type: "SHOW_NOTIFICATION", payload: { message, type } });
   };
@@ -367,6 +373,9 @@ export function AppProvider({ children }) {
     dispatch,
     login,
     logout,
+    clearCart,
+    addToCart,
+    removeFromCart,
     notify,
     getCartTotal,
     getCartItemCount,
