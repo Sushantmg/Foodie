@@ -18,14 +18,477 @@
 
 ---
 
-## 🚀 Features Overview
+## 🏗️ System Architecture
 
-### 🔐 Authentication & Role-Based Access
-| Role | Email | Password | Permissions |
-|------|-------|----------|-------------|
-| **Admin** | admin@foodiepos.com | admin123 | Full access — POS, Orders, Dashboard, Reports, Menu, Inventory, Staff, Customers, Settings |
-| **Manager** | manager@foodiepos.com | manager123 | POS, Orders, Dashboard, Reports, Menu, Inventory, Staff, Customers |
-| **Staff** | staff@foodiepos.com | staff123 | POS, Orders, Tables, Chatbot only |
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                          FoodiePOS System                           │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐          │
+│  │   Frontend   │◄──►│  App Context │◄──►│  localStorage│          │
+│  │   (React)    │    │  (State)     │    │  (Storage)   │          │
+│  └──────┬───────┘    └──────┬───────┘    └──────────────┘          │
+│         │                   │                                       │
+│         ▼                   ▼                                       │
+│  ┌──────────────┐    ┌──────────────┐                               │
+│  │   Pages      │    │  Reducer     │                               │
+│  │  ┌────────┐  │    │  ┌────────┐  │                               │
+│  │  │  POS   │  │    │  │Actions │  │                               │
+│  │  ├────────┤  │    │  ├────────┤  │                               │
+│  │  │ Orders │  │    │  │ State  │  │                               │
+│  │  ├────────┤  │    │  ├────────┤  │                               │
+│  │  │Dashboard│ │    │  │Dispatch│  │                               │
+│  │  ├────────┤  │    │  └────────┘  │                               │
+│  │  │ Reports│  │    └──────────────┘                               │
+│  │  ├────────┤                                                      │
+│  │  │ Staff  │                                                      │
+│  │  ├────────┤                                                      │
+│  │  │Inventory│                                                     │
+│  │  ├────────┤                                                      │
+│  │  │Customers│                                                     │
+│  │  ├────────┤                                                      │
+│  │  │Settings│                                                      │
+│  │  ├────────┤                                                      │
+│  │  │Chatbot │                                                      │
+│  │  └────────┘                                                      │
+│  └──────────────┘                                                   │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🔄 Core Workflows
+
+### 1. Authentication & Login Flow
+
+```
+                    ┌─────────────┐
+                    │  User Opens │
+                    │    App      │
+                    └──────┬──────┘
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │  Check Auth │
+                    │   Stored?   │
+                    └──────┬──────┘
+                           │
+              ┌────────────┼────────────┐
+              │ YES        │            │ NO
+              ▼            │            ▼
+     ┌─────────────┐      │     ┌─────────────┐
+     │ Auto Login  │      │     │  Show Login │
+     │  & Redirect │      │     │    Page     │
+     └──────┬──────┘      │     └──────┬──────┘
+            │             │            │
+            │             │            ▼
+            │             │     ┌─────────────┐
+            │             │     │  User Enter │
+            │             │     │ Email/Pass  │
+            │             │     └──────┬──────┘
+            │             │            │
+            │             │            ▼
+            │             │     ┌─────────────┐
+            │             │     │  Validate   │
+            │             │     │ Credentials │
+            │             │     └──────┬──────┘
+            │             │            │
+            │             │     ┌──────┼──────┐
+            │             │     │ VALID│      │INVALID
+            │             │     ▼      │      ▼
+            │             │  ┌──────┐  │  ┌──────────┐
+            │             │  │Store │  │  │ Show     │
+            │             │  │User  │  │  │ Error    │
+            │             │  └──┬───┘  │  └──────────┘
+            │             │     │      │
+            └─────────────┼─────┘      │
+                          │            │
+                          ▼            │
+                   ┌─────────────┐    │
+                   │ Route Based │    │
+                   │ on Role     │    │
+                   └──────┬──────┘    │
+                          │           │
+          ┌───────────────┼───────────┘
+          │               │
+          ▼               ▼
+   ┌─────────────┐ ┌─────────────┐
+   │   Admin:    │ │   Staff:    │
+   │ All Pages   │ │ POS/Orders/ │
+   └─────────────┘ │ Chatbot Only│
+                   └─────────────┘
+```
+
+### 2. Order Processing Workflow
+
+```
+    ┌──────────────┐
+    │  Staff Opens │
+    │  POS Terminal│
+    └──────┬───────┘
+           │
+           ▼
+    ┌──────────────┐     ┌──────────────┐
+    │ Select Table │────►│ Choose Order │
+    │ & Order Type │     │    Type      │
+    └──────┬───────┘     └──────────────┘
+           │
+           ▼
+    ┌──────────────┐
+    │ Browse Menu  │
+    │ Search/Filter│
+    └──────┬───────┘
+           │
+           ▼
+    ┌──────────────┐     ┌──────────────┐
+    │ Click Item ──┼──►  │ Add to Cart  │
+    │   to Add     │     │ Quantity +1  │
+    └──────────────┘     └──────┬───────┘
+                                │
+                   ┌────────────┼────────────┐
+                   │            │            │
+                   ▼            ▼            ▼
+            ┌──────────┐ ┌──────────┐ ┌──────────┐
+            │  Add More │ │ Add Mod- │ │ Proceed  │
+            │   Items   │ │ ifiers   │ │ to Pay   │
+            └──────────┘ └──────────┘ └────┬─────┘
+                                           │
+                                           ▼
+                                    ┌──────────────┐
+                                    │ Apply        │
+                                    │ Discount     │
+                                    │ (Optional)   │
+                                    └──────┬───────┘
+                                           │
+                                           ▼
+                                    ┌──────────────┐
+                                    │ Link Customer│
+                                    │ (Optional)   │
+                                    └──────┬───────┘
+                                           │
+                                           ▼
+                                    ┌──────────────┐
+                                    │ Select       │
+                                    │ Payment Method│
+                                    │ Cash/Card/UPI│
+                                    └──────┬───────┘
+                                           │
+                                           ▼
+                                    ┌──────────────┐
+                                    │   Place      │
+                                    │   Order      │
+                                    └──────┬───────┘
+                                           │
+                        ┌──────────────────┼──────────────────┐
+                        │                  │                  │
+                        ▼                  ▼                  ▼
+                 ┌────────────┐    ┌────────────┐    ┌────────────┐
+                 │ Deduct Stock│   │ Create     │    │ Award      │
+                 │ from        │   │ Order      │    │ Loyalty    │
+                 │ Inventory   │   │ Record     │    │ Points     │
+                 └────────────┘    └─────┬──────┘    └────────────┘
+                                         │
+                                         ▼
+                                  ┌──────────────┐
+                                  │  Kitchen     │
+                                  │  Receives    │
+                                  │  Order       │
+                                  └──────┬───────┘
+                                         │
+                                         ▼
+                                  ┌──────────────┐
+                                  │  Status:     │
+                                  │  PREPARING   │
+                                  └──────┬───────┘
+                                         │
+                                         ▼
+                                  ┌──────────────┐
+                                  │  Mark as     │
+                                  │  READY       │
+                                  └──────┬───────┘
+                                         │
+                                         ▼
+                                  ┌──────────────┐
+                                  │  Complete    │
+                                  │  Order       │
+                                  │  (Release    │
+                                  │   Table)     │
+                                  └──────────────┘
+```
+
+### 3. Inventory Management Flow
+
+```
+    ┌──────────────────┐
+    │  View Inventory  │
+    │     Page         │
+    └────────┬─────────┘
+             │
+             ▼
+    ┌──────────────────┐
+    │  Stock Level     │
+    │  Monitoring      │
+    └────────┬─────────┘
+             │
+    ┌────────┼────────────────────┐
+    │        │                    │
+    ▼        ▼                    ▼
+┌────────┐ ┌────────┐      ┌────────┐
+│ Stock  │ │ Stock  │      │ Stock  │
+│  HIGH  │ │  LOW   │      │  OUT   │
+│  (>10) │ │ (1-10) │      │  (0)   │
+└────────┘ └───┬────┘      └───┬────┘
+               │                │
+               ▼                ▼
+        ┌──────────┐     ┌──────────┐
+        │  Show    │     │  Show    │
+        │  Warning │     │  Alert   │
+        │  Badge   │     │  Badge   │
+        └──────────┘     └──────────┘
+               │                │
+               └───────┬────────┘
+                       │
+                       ▼
+                ┌──────────────┐
+                │   Restock    │
+                │   (+50)      │
+                └──────┬───────┘
+                       │
+                       ▼
+                ┌──────────────┐
+                │ Stock Updated│
+                │ Badge Removed│
+                └──────────────┘
+```
+
+### 4. Customer Loyalty Flow
+
+```
+    ┌──────────────┐
+    │  Customer    │
+    │  Places Order│
+    └──────┬───────┘
+           │
+           ▼
+    ┌──────────────┐
+    │ Link Customer│
+    │ to Order     │
+    └──────┬───────┘
+           │
+           ▼
+    ┌──────────────┐
+    │ Order Total  │
+    │ = $50        │
+    └──────┬───────┘
+           │
+           ▼
+    ┌──────────────┐
+    │ Earn Points  │
+    │ 50 × 1 = 50  │
+    └──────┬───────┘
+           │
+           ▼
+    ┌──────────────┐
+    │ Add to Total │
+    │ Points       │
+    └──────┬───────┘
+           │
+           ▼
+    ┌──────────────────────────────────────┐
+    │         Check Tier Upgrade           │
+    └──────────────┬───────────────────────┘
+                   │
+     ┌─────────────┼─────────────┬─────────────┐
+     │             │             │             │
+     ▼             ▼             ▼             ▼
+┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐
+│ BRONZE  │  │ SILVER  │  │  GOLD   │  │PLATINUM │
+│ 0-99pts │  │100-299  │  │300-999  │  │ 1000+   │
+│ 0% off  │  │ 5% off  │  │ 10% off │  │ 15% off │
+└─────────┘  └─────────┘  └─────────┘  └─────────┘
+```
+
+### 5. Menu Management Flow
+
+```
+    ┌──────────────────┐
+    │  Manager/Admin   │
+    │  Opens Menu Mgmt │
+    └────────┬─────────┘
+             │
+    ┌────────┼────────┐
+    │        │        │
+    ▼        ▼        ▼
+┌────────┐┌────────┐┌────────┐
+│  ADD   ││  EDIT  ││ DELETE │
+│  NEW   ││  ITEM  ││  ITEM  │
+│  ITEM  ││        ││        │
+└───┬────┘└───┬────┘└───┬────┘
+    │         │         │
+    ▼         ▼         ▼
+┌────────┐┌────────┐┌────────┐
+│ Fill   ││Modify  ││Confirm │
+│ Form   ││Details ││Delete  │
+│ Name   ││ Price  ││        │
+│ Price  ││ Stock  │└───┬────┘
+│ Cost   ││ Desc   │    │
+│ Stock  ││ Avail  │    ▼
+│ Desc   │└───┬────┘┌────────┐
+│ Icon   │    │     │  Item  │
+└───┬────┘    ▼     │ Removed│
+    │      ┌────────┐└────────┘
+    ▼      │ Item   │
+┌────────┐ │ Updated│
+│ Item   │ └────────┘
+│ Added  │
+└────────┘
+```
+
+---
+
+## 🔐 Access Management
+
+### Navigation Access
+
+| Feature | 👨‍💼 Admin | 👨‍🍳 Manager | 👩‍🍳 Staff |
+|---------|:---------:|:---------:|:--------:|
+| **🛒 POS Terminal** | ✅ | ✅ | ✅ |
+| **📋 Orders** | ✅ | ✅ | ✅ |
+| **🪑 Tables** | ✅ | ✅ | ✅ |
+| **💬 Chatbot** | ✅ | ✅ | ✅ |
+| **📊 Dashboard** | ✅ | ✅ | ❌ |
+| **📈 Reports** | ✅ | ✅ | ❌ |
+| **📝 Menu Management** | ✅ | ✅ | ❌ |
+| **📦 Inventory** | ✅ | ✅ | ❌ |
+| **👥 Staff Management** | ✅ | ✅ | ❌ |
+| **💎 Customers** | ✅ | ✅ | ❌ |
+| **⚙️ Settings** | ✅ | ❌ | ❌ |
+
+### Action-Level Permissions
+
+| Action | 👨‍💼 Admin | 👨‍🍳 Manager | 👩‍🍳 Staff |
+|--------|:---------:|:---------:|:--------:|
+| **POS** | | | |
+| Add items to cart | ✅ | ✅ | ✅ |
+| Apply modifiers | ✅ | ✅ | ✅ |
+| Apply discounts | ✅ | ✅ | ✅ |
+| Place orders | ✅ | ✅ | ✅ |
+| Clear cart | ✅ | ✅ | ✅ |
+| **Orders** | | | |
+| View all orders | ✅ | ✅ | ✅ |
+| Update status | ✅ | ✅ | ✅ |
+| Complete orders | ✅ | ✅ | ✅ |
+| Cancel orders | ✅ | ✅ | ✅ |
+| **Menu** | | | |
+| View menu items | ✅ | ✅ | ✅ |
+| Add new items | ✅ | ✅ | ❌ |
+| Edit items | ✅ | ✅ | ❌ |
+| Delete items | ✅ | ✅ | ❌ |
+| Toggle availability | ✅ | ✅ | ❌ |
+| **Inventory** | | | |
+| View stock levels | ✅ | ✅ | ❌ |
+| Restock items | ✅ | ✅ | ❌ |
+| **Staff** | | | |
+| View team members | ✅ | ✅ | ❌ |
+| Add / Edit / Remove | ✅ | ✅ | ❌ |
+| **Customers** | | | |
+| View customers | ✅ | ✅ | ❌ |
+| Add / Edit / Delete | ✅ | ✅ | ❌ |
+| **Settings** | | | |
+| View & Edit settings | ✅ | ❌ | ❌ |
+
+### Dashboard Access
+
+| Metric | 👨‍💼 Admin | 👨‍🍳 Manager | 👩‍🍳 Staff |
+|--------|:---------:|:---------:|:--------:|
+| Revenue | ✅ | ✅ | ❌ |
+| Profit | ✅ | ✅ | ❌ |
+| Total orders | ✅ | ✅ | ❌ |
+| Popular items | ✅ | ✅ | ❌ |
+| Category sales | ✅ | ✅ | ❌ |
+| Low stock alerts | ✅ | ✅ | ❌ |
+| Hourly sales chart | ✅ | ✅ | ❌ |
+
+### Reports Access
+
+| Report | 👨‍💼 Admin | 👨‍🍳 Manager | 👩‍🍳 Staff |
+|--------|:---------:|:---------:|:--------:|
+| Revenue by period | ✅ | ✅ | ❌ |
+| Top selling items | ✅ | ✅ | ❌ |
+| Payment breakdown | ✅ | ✅ | ❌ |
+| Order type distribution | ✅ | ✅ | ❌ |
+| Hourly distribution | ✅ | ✅ | ❌ |
+| CSV export | ✅ | ✅ | ❌ |
+
+### Login Credentials
+
+| Role | Email | Password |
+|------|-------|----------|
+| 👨‍💼 **Admin** | admin@foodiepos.com | admin123 |
+| 👨‍🍳 **Manager** | manager@foodiepos.com | manager123 |
+| 👩‍🍳 **Staff** | staff@foodiepos.com | staff123 |
+
+### Role Summary
+
+| | Admin | Manager | Staff |
+|--|-------|---------|-------|
+| **Can access Settings** | ✅ Only | ❌ | ❌ |
+| **Can manage staff** | ✅ | ✅ | ❌ |
+| **Can see financials** | ✅ | ✅ | ❌ |
+| **Can modify menu** | ✅ | ✅ | ❌ |
+| **Can manage inventory** | ✅ | ✅ | ❌ |
+| **Can export reports** | ✅ | ✅ | ❌ |
+| **Scope** | Full control | Operations | Front-of-house |
+
+---
+
+## 📊 Data Flow Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         DATA FLOW                                │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  USER INPUT         STATE              PERSISTENCE               │
+│  ─────────         ─────              ───────────                │
+│                                                                  │
+│  ┌─────────┐    ┌─────────┐    ┌─────────────┐                 │
+│  │ Login   │───►│  Auth   │───►│ localStorage│                 │
+│  │ Form    │    │  State  │    │ currentUser │                 │
+│  └─────────┘    └─────────┘    └─────────────┘                 │
+│                                                                  │
+│  ┌─────────┐    ┌─────────┐    ┌─────────────┐                 │
+│  │ POS     │───►│  Cart   │───►│ localStorage│                 │
+│  │ Actions │    │  State  │    │ orders[]    │                 │
+│  └─────────┘    └────┬────┘    └─────────────┘                 │
+│                      │                                           │
+│                      ▼                                           │
+│               ┌─────────┐    ┌─────────────┐                   │
+│               │  Order  │───►│ localStorage│                   │
+│               │ Created │    │ orders[]    │                   │
+│               └────┬────┘    └─────────────┘                   │
+│                    │                                             │
+│          ┌─────────┼─────────┐                                  │
+│          ▼         ▼         ▼                                  │
+│   ┌──────────┐┌──────────┐┌──────────┐                         │
+│   │ Stock    ││ Loyalty  ││ Table    │                         │
+│   │ Updated  ││ Points   ││ Status   │                         │
+│   │ menu[]   ││ customers││ tables[] │                         │
+│   └──────────┘└──────────┘└──────────┘                         │
+│                                                                  │
+│  ┌─────────┐    ┌─────────┐    ┌─────────────┐                 │
+│  │Settings │───►│ Config  │───►│ localStorage│                 │
+│  │ Changes │    │ State   │    │ settings{}  │                 │
+│  └─────────┘    └─────────┘    └─────────────┘                 │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🚀 Features Overview
 
 ### 🛒 POS Terminal
 - **24 menu items** across 4 categories with real-time search & filter
@@ -67,7 +530,7 @@
 - **Payment method** breakdown (Cash/Card/UPI)
 - **Order type** distribution (Dine-In/Takeaway/Delivery)
 - **Hourly sales** distribution chart
-- **CSV Export** for all reports — download and analyze offline
+- **CSV Export** for all reports
 
 ### 📝 Menu Management
 - **Add / Edit / Delete** menu items with full form
@@ -210,22 +673,6 @@ Foodie/
 ├── package.json
 └── vite.config.js
 ```
-
----
-
-## 📸 Screenshots
-
-| Login | POS Terminal | Orders | Dashboard |
-|-------|-------------|--------|-----------|
-| 🔐 Secure auth with role-based access | 🛒 Full ordering with modifiers & discounts | 📋 Real-time order tracking | 📊 Revenue & analytics |
-
-| Menu Management | Inventory | Staff | Reports |
-|-----------------|-----------|-------|---------|
-| 📝 Add/Edit/Delete items | 📦 Stock tracking & alerts | 👥 Team management | 📈 CSV export & analytics |
-
-| Customers | Chatbot | Tables | Settings |
-|-----------|---------|--------|----------|
-| 💎 Loyalty tiers | 💬 AI assistant | 🪑 Visual layout | ⚙️ Full configuration |
 
 ---
 
