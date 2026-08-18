@@ -1,0 +1,109 @@
+.staff-page { padding: 24px; overflow-y: auto; height: calc(100vh - 60px); }
+
+.staff-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.staff-count { color: #64748b; font-size: 14px; }
+
+.staff-add-btn {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #6366f1;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.staff-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.staff-card {
+  background: white;
+  border-radius: 14px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.staff-avatar {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.staff-card h3 { font-size: 16px; margin-bottom: 6px; }
+
+.staff-role {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.staff-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 16px;
+}
+
+.staff-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.sa-edit {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #e0e7ff;
+  color: #4f46e5;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sa-delete {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #fee2e2;
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.staff-form { display: flex; flex-direction: column; gap: 14px; }
+.sf-group { display: flex; flex-direction: column; gap: 4px; }
+.sf-group label { font-size: 13px; font-weight: 600; }
+.sf-group input, .sf-group select { padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; outline: none; }
+.sf-row { display: flex; gap: 12px; }
+.sf-row .sf-group { flex: 1; }
+
+.sf-avatars { display: flex; gap: 6px; flex-wrap: wrap; }
+.sf-avatar { width: 40px; height: 40px; border: 2px solid #e2e8f0; border-radius: 10px; background: white; font-size: 20px; cursor: pointer; }
+.sf-avatar.active { border-color: #6366f1; background: #eef2ff; }
+
+.sf-save {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #6366f1;
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+}

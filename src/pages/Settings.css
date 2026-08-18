@@ -1,0 +1,108 @@
+.settings-page { padding: 24px; overflow-y: auto; height: calc(100vh - 60px); }
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.settings-header h2 { font-size: 22px; }
+
+.save-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background: #10b981;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.settings-section {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.settings-section h3 { font-size: 16px; margin-bottom: 16px; }
+
+.setting-group {
+  margin-bottom: 14px;
+}
+
+.setting-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 4px;
+}
+
+.setting-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+.setting-group input:focus { border-color: #6366f1; }
+
+.setting-row { display: flex; gap: 12px; }
+.setting-row .setting-group { flex: 1; }
+
+.setting-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.setting-toggle label { font-size: 13px; font-weight: 600; }
+
+.toggle {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  background: #e2e8f0;
+  color: #64748b;
+}
+
+.toggle.on { background: #d1fae5; color: #059669; }
+.toggle.small { padding: 4px 12px; font-size: 11px; }
+
+.hours-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.hours-day { font-size: 13px; font-weight: 600; min-width: 90px; }
+
+.hours-times {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hours-times input[type="time"] {
+  padding: 4px 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.hours-times span { color: #94a3b8; font-size: 12px; }
