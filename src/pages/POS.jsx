@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useApp } from "../context/AppContext";
 import { modifiers } from "../data/menuData";
 import { formatCurrency } from "../utils/helpers";
@@ -8,7 +8,7 @@ export default function POS() {
   const {
     menu, cart, selectedCategory, searchQuery, dispatch,
     addToCart, removeFromCart, clearCart, getCartTotal, getCartItemCount,
-    placeOrder, notify, tableNumber, orderType, customers, settings,
+    placeOrder, notify, tableNumber, orderType, customers, settings, tables,
   } = useApp();
 
   const [showPayment, setShowPayment] = useState(false);
@@ -18,7 +18,8 @@ export default function POS() {
   const [selectedCustomer, setSelectedCustomer] = useState("");
   const [showModifiers, setShowModifiers] = useState(null);
   const [orderPlaced, setOrderPlaced] = useState(false);
-  const [notes, setNotes] = useState("");
+  const [orderNotes, setOrderNotes] = useState("");
+  const [showTables, setShowTables] = useState(false);
 
   const categories = ["All", "Appetizers", "Main Course", "Desserts", "Beverages"];
 
@@ -34,20 +35,52 @@ export default function POS() {
   const tax = taxable * (settings.taxRate / 100);
   const total = taxable + tax;
 
+  // Keyboard shortcuts
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === "F1") { e.preventDefault(); dispatch({ type: "SET_ACTIVE_TAB", payload: "pos" }); }
+    if (e.key === "F2") { e.preventDefault(); dispatch({ type: "SET_ACTIVE_TAB", payload: "orders" }); }
+    if (e.key === "F3") { e.preventDefault(); dispatch({ type: "SET_ACTIVE_TAB", payload: "dashboard" }); }
+    if (e.key === "F4") { e.preventDefault(); setShowTables(!showTables); }
+    if (e.key === "Escape") {
+      setShowPayment(false);
+      setShowModifiers(null);
+      setShowTables(false);
+    }
+    if (e.ctrlKey && e.key === "Enter" && cart.length > 0) {
+      e.preventDefault();
+      setShowPayment(true);
+    }
+  }, [dispatch, showTables, cart.length]);
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
+
   const handlePlaceOrder = () => {
-    const order = placeOrder(discountAmount, paymentMethod, selectedCustomer || null);
+    const order = placeOrder(discountAmount, paymentMethod, selectedCustomer || null, orderNotes);
     if (order) {
+      // Add notes to the order
+      if (orderNotes) {
+        dispatch({
+          type: "UPDATE_ORDER_STATUS",
+          payload: { orderId: order.id, status: "preparing" },
+        });
+      }
       setOrderPlaced(true);
       setTimeout(() => {
         setOrderPlaced(false);
         setShowPayment(false);
         setDiscount(0);
         setSelectedCustomer("");
-        setNotes("");
+        setOrderNotes("");
         notify(`Order #${order.id.slice(-4).toUpperCase()} placed successfully!`);
       }, 1500);
     }
   };
+
+  const occupiedTables = tables.filter((t) => t.status === "occupied").length;
+  const availableTables = tables.filter((t) => t.status === "available").length;
 
   if (orderPlaced) {
     return (
@@ -69,9 +102,10 @@ export default function POS() {
             <span>🔍</span>
             <input
               type="text"
-              placeholder="Search menu..."
+              placeholder="Search menu... (Ctrl+K)"
               value={searchQuery}
               onChange={(e) => dispatch({ type: "SET_SEARCH", payload: e.target.value })}
+              autoFocus
             />
           </div>
           <div className="pos-categories">
@@ -89,7 +123,7 @@ export default function POS() {
 
         <div className="pos-items-grid">
           {filteredItems.map((item) => (
-            <div key={item.id} className="pos-item" onClick={() => { dispatch({ type: "ADD_TO_CART", payload: item }); }}>
+            <div key={item.id} className="pos-item" onClick={() => addToCart(item)}>
               <div className="pos-item-top">
                 <span className="pos-item-img">{item.image}</span>
                 {item.stock <= settings.lowStockThreshold && (
@@ -108,6 +142,12 @@ export default function POS() {
               </div>
             </div>
           ))}
+          {filteredItems.length === 0 && (
+            <div className="pos-no-items">
+              <span>🔍</span>
+              <p>No items found</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -125,18 +165,56 @@ export default function POS() {
           </select>
           {orderType === "dine-in" && (
             <select value={tableNumber} onChange={(e) => dispatch({ type: "SET_TABLE", payload: Number(e.target.value) })}>
-              {[...Array(20)].map((_, i) => (
-                <option key={i + 1} value={i + 1}>Table {i + 1}</option>
-              ))}
+              {[...Array(20)].map((_, i) => {
+                const table = tables.find((t) => t.number === i + 1);
+                const isOccupied = table?.status === "occupied";
+                return (
+                  <option key={i + 1} value={i + 1} disabled={isOccupied && table?.number !== tableNumber}>
+                    Table {i + 1} {isOccupied ? "🔴" : "🟢"}
+                  </option>
+                );
+              })}
             </select>
           )}
         </div>
+
+        {/* Table Status Mini View */}
+        {orderType === "dine-in" && showTables && (
+          <div className="pos-tables-mini">
+            <div className="ptm-header">
+              <span>Table Status</span>
+              <button onClick={() => setShowTables(false)}>✕</button>
+            </div>
+            <div className="ptm-grid">
+              {tables.map((table) => (
+                <button
+                  key={table.number}
+                  className={`ptm-table ${table.status} ${table.number === tableNumber ? "selected" : ""}`}
+                  onClick={() => {
+                    if (table.status === "available") {
+                      dispatch({ type: "SET_TABLE", payload: table.number });
+                    }
+                  }}
+                  disabled={table.status === "occupied" && table.number !== tableNumber}
+                >
+                  <span>{table.number}</span>
+                  <span className="ptm-dot" />
+                </button>
+              ))}
+            </div>
+            <div className="ptm-legend">
+              <span><span className="ptm-dot available" /> Available ({availableTables})</span>
+              <span><span className="ptm-dot occupied" /> Occupied ({occupiedTables})</span>
+            </div>
+          </div>
+        )}
 
         <div className="pos-cart-items">
           {cart.length === 0 ? (
             <div className="pos-empty-cart">
               <span>🛒</span>
               <p>No items yet</p>
+              <p className="pos-empty-hint">Click items from the menu to add</p>
             </div>
           ) : (
             cart.map((item) => (
@@ -158,12 +236,12 @@ export default function POS() {
                 </div>
                 <div className="pci-bottom">
                   <div className="pci-controls">
-                    <button onClick={() => removeFromCart(item.id)}>-</button>
+                    <button onClick={(e) => { e.stopPropagation(); removeFromCart(item.id); }}>-</button>
                     <span>{item.quantity}</span>
-                    <button onClick={() => dispatch({ type: "ADD_TO_CART", payload: item })}>+</button>
+                    <button onClick={(e) => { e.stopPropagation(); addToCart(item); }}>+</button>
                   </div>
                   <span className="pci-price">{formatCurrency((item.price + item.modifiers.reduce((s, m) => s + m.price, 0)) * item.quantity)}</span>
-                  <button className="pci-mod-btn" onClick={() => setShowModifiers(item.id)} title="Add modifier">+</button>
+                  <button className="pci-mod-btn" onClick={(e) => { e.stopPropagation(); setShowModifiers(item.id); }} title="Add modifier">+</button>
                 </div>
               </div>
             ))
@@ -177,10 +255,12 @@ export default function POS() {
                 <span>Items ({getCartItemCount()})</span>
                 <span>{formatCurrency(subtotal)}</span>
               </div>
-              <div className="sum-row">
-                <span>Discount</span>
-                <span className="discount-val">-{formatCurrency(discountAmount)}</span>
-              </div>
+              {discountAmount > 0 && (
+                <div className="sum-row">
+                  <span>Discount</span>
+                  <span className="discount-val">-{formatCurrency(discountAmount)}</span>
+                </div>
+              )}
               <div className="sum-row">
                 <span>Tax ({settings.taxRate}%)</span>
                 <span>{formatCurrency(tax)}</span>
@@ -193,7 +273,7 @@ export default function POS() {
 
             {!showPayment ? (
               <button className="checkout-btn" onClick={() => setShowPayment(true)}>
-                Proceed to Payment
+                Proceed to Payment (Ctrl+Enter)
               </button>
             ) : (
               <div className="payment-section">
@@ -205,9 +285,10 @@ export default function POS() {
                       value={discount}
                       onChange={(e) => setDiscount(Number(e.target.value))}
                       min="0"
+                      placeholder="0"
                     />
                     <select value={discountType} onChange={(e) => setDiscountType(e.target.value)}>
-                      <option value="fixed">Fixed</option>
+                      <option value="fixed">$</option>
                       <option value="percent">%</option>
                     </select>
                   </div>
@@ -220,6 +301,16 @@ export default function POS() {
                       <option key={c.id} value={c.id}>{c.name} ({c.tier})</option>
                     ))}
                   </select>
+                </div>
+                <div className="pay-row">
+                  <label>Notes:</label>
+                  <input
+                    type="text"
+                    value={orderNotes}
+                    onChange={(e) => setOrderNotes(e.target.value)}
+                    placeholder="Special instructions..."
+                    className="notes-input"
+                  />
                 </div>
                 <div className="pay-methods">
                   {["cash", "card", "upi"].map((m) => (
@@ -272,6 +363,15 @@ export default function POS() {
           </div>
         </div>
       )}
+
+      {/* Keyboard Shortcuts Help */}
+      <div className="pos-shortcuts-hint">
+        <span title="F1: POS">F1</span>
+        <span title="F2: Orders">F2</span>
+        <span title="F3: Dashboard">F3</span>
+        <span title="F4: Tables">F4</span>
+        <span title="Ctrl+Enter: Checkout">⌘↵</span>
+      </div>
     </div>
   );
 }

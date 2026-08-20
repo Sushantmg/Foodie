@@ -300,7 +300,7 @@ export function AppProvider({ children }) {
     return state.cart.reduce((sum, item) => sum + item.quantity, 0);
   };
 
-  const placeOrder = (discount = 0, paymentMethod = "cash", customerId = null) => {
+  const placeOrder = (discount = 0, paymentMethod = "cash", customerId = null, notes = "") => {
     if (state.cart.length === 0) return null;
     const subtotal = getCartTotal();
     const discountAmount = discount;
@@ -323,6 +323,7 @@ export function AppProvider({ children }) {
       status: "preparing",
       paymentMethod,
       customerId,
+      notes,
       createdBy: state.currentUser?.id,
       createdByName: state.currentUser?.name,
       createdAt: new Date().toISOString(),

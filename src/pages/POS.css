@@ -585,6 +585,126 @@
   background: #e2e8f0;
 }
 
+.notes-input {
+  font-size: 13px !important;
+}
+
+.pos-empty-hint {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.pos-no-items {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 48px;
+  color: #94a3b8;
+}
+
+.pos-no-items span { font-size: 40px; display: block; margin-bottom: 8px; }
+
+/* Table Mini View */
+.pos-tables-mini {
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 12px 16px;
+}
+
+.ptm-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.ptm-header button {
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 6px;
+  background: #f1f5f9;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.ptm-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.ptm-table {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 2px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: white;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.ptm-table.available { border-color: #d1fae5; }
+.ptm-table.available:hover { background: #d1fae5; }
+.ptm-table.occupied { background: #fef3c7; border-color: #fde68a; cursor: default; }
+.ptm-table.selected { background: #6366f1; color: white; border-color: #6366f1; }
+
+.ptm-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.ptm-dot.available, .ptm-table.available .ptm-dot { background: #10b981; }
+.ptm-dot.occupied, .ptm-table.occupied .ptm-dot { background: #f59e0b; }
+.ptm-table.selected .ptm-dot { background: white; }
+
+.ptm-legend {
+  display: flex;
+  gap: 16px;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.ptm-legend span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Keyboard Shortcuts Hint */
+.pos-shortcuts-hint {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  background: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  z-index: 40;
+}
+
+.pos-shortcuts-hint span {
+  font-size: 10px;
+  font-weight: 700;
+  color: #94a3b8;
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
 /* ---- Modifiers Modal ---- */
 .modifiers-overlay {
   position: fixed;

@@ -8,6 +8,7 @@ export default function Inventory() {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("name");
   const [filterStock, setFilterStock] = useState("all");
+  const [restockAmounts, setRestockAmounts] = useState({});
 
   const totalStock = menu.reduce((s, m) => s + m.stock, 0);
   const totalValue = menu.reduce((s, m) => s + m.stock * m.cost, 0);
@@ -75,6 +76,24 @@ export default function Inventory() {
           <span className="inv-col">Status</span>
           <span className="inv-col">Restock</span>
         </div>
+        {lowStock.length > 0 && (
+          <div className="inv-row inv-bulk-restock">
+            <span className="inv-col name-col" style={{ fontWeight: 700 }}>
+              ⚡ Bulk Restock
+            </span>
+            <span className="inv-col" style={{ gridColumn: "span 4", fontSize: 13, color: "#64748b" }}>
+              Restock all {lowStock.length} low stock items by 50 units each
+            </span>
+            <span className="inv-col">
+              <button className="restock-btn bulk" onClick={() => {
+                lowStock.forEach((item) => {
+                  dispatch({ type: "UPDATE_MENU_ITEM", payload: { ...item, stock: item.stock + 50 } });
+                });
+                notify(`Bulk restocked ${lowStock.length} items`);
+              }}>Restock All +50</button>
+            </span>
+          </div>
+        )}
         {filtered.map((item) => (
           <div key={item.id} className="inv-row">
             <span className="inv-col name-col">
@@ -95,10 +114,32 @@ export default function Inventory() {
                 <button onClick={() => {
                   dispatch({ type: "UPDATE_MENU_ITEM", payload: { ...item, stock: Math.max(0, item.stock - 10) } });
                 }}>-</button>
+                <input
+                  type="number"
+                  className="restock-input"
+                  value={restockAmounts[item.id] || ""}
+                  placeholder="qty"
+                  min="1"
+                  onChange={(e) => setRestockAmounts({ ...restockAmounts, [item.id]: Number(e.target.value) })}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      const amt = restockAmounts[item.id] || 0;
+                      if (amt > 0) {
+                        dispatch({ type: "UPDATE_MENU_ITEM", payload: { ...item, stock: item.stock + amt } });
+                        notify(`${item.name} restocked +${amt}`);
+                        setRestockAmounts({ ...restockAmounts, [item.id]: "" });
+                      }
+                    }
+                  }}
+                />
                 <button className="restock-btn" onClick={() => {
-                  dispatch({ type: "UPDATE_MENU_ITEM", payload: { ...item, stock: item.stock + 50 } });
-                  notify(`${item.name} restocked +50`);
-                }}>+50</button>
+                  const amt = restockAmounts[item.id] || 50;
+                  if (amt > 0) {
+                    dispatch({ type: "UPDATE_MENU_ITEM", payload: { ...item, stock: item.stock + amt } });
+                    notify(`${item.name} restocked +${amt}`);
+                    setRestockAmounts({ ...restockAmounts, [item.id]: "" });
+                  }
+                }}>Restock</button>
               </div>
             </span>
           </div>

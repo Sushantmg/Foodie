@@ -1,14 +1,21 @@
 import { useState } from "react";
 import { useApp } from "../context/AppContext";
+import { storage } from "../utils/helpers";
 import "./Settings.css";
 
 export default function Settings() {
   const { settings, dispatch, notify, currentUser } = useApp();
   const [form, setForm] = useState({ ...settings });
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleSave = () => {
     dispatch({ type: "UPDATE_SETTINGS", payload: form });
     notify("Settings saved successfully");
+  };
+
+  const handleClearData = () => {
+    storage.clear();
+    window.location.reload();
   };
 
   return (
@@ -129,6 +136,35 @@ export default function Settings() {
               )}
             </div>
           ))}
+        </div>
+
+        <div className="settings-section">
+          <h3>🗄️ Data Management</h3>
+          <p style={{ fontSize: 13, color: "#64748b", marginBottom: 12 }}>
+            Reset all data to defaults. This will clear all orders, menu changes, customers, and settings.
+          </p>
+          {!showConfirm ? (
+            <button
+              className="danger-btn"
+              onClick={() => setShowConfirm(true)}
+            >
+              Reset All Data
+            </button>
+          ) : (
+            <div className="confirm-clear">
+              <p style={{ fontSize: 13, fontWeight: 700, color: "#ef4444", marginBottom: 8 }}>
+                Are you sure? This cannot be undone.
+              </p>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button className="danger-btn" onClick={handleClearData}>
+                  Yes, Reset Everything
+                </button>
+                <button className="cancel-clear" onClick={() => setShowConfirm(false)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

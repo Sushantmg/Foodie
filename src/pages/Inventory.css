@@ -70,7 +70,7 @@
 .inv-status.low { background: #fef3c7; color: #d97706; }
 .inv-status.out { background: #fee2e2; color: #ef4444; }
 
-.restock-controls { display: flex; gap: 4px; }
+.restock-controls { display: flex; gap: 4px; align-items: center; }
 
 .restock-controls button {
   width: 28px;
@@ -81,12 +81,49 @@
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
+  transition: all 0.15s;
 }
+
+.restock-controls button:hover { background: #f1f5f9; }
+
+.restock-input {
+  width: 48px;
+  height: 28px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 12px;
+  text-align: center;
+  padding: 0;
+  outline: none;
+}
+
+.restock-input:focus { border-color: #6366f1; }
 
 .restock-btn {
   width: auto !important;
-  padding: 0 8px;
+  padding: 0 10px;
+  height: 28px;
   background: #d1fae5 !important;
   color: #059669 !important;
   border-color: #a7f3d0 !important;
+  font-size: 11px;
+  font-weight: 700;
 }
+
+.restock-btn:hover { background: #a7f3d0 !important; }
+
+.restock-btn.bulk {
+  width: auto !important;
+  height: auto;
+  padding: 6px 14px;
+  background: #6366f1 !important;
+  color: white !important;
+  border-color: #6366f1 !important;
+  font-size: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.restock-btn.bulk:hover { background: #4f46e5 !important; }
+
+.inv-bulk-restock { background: #fefce8; }

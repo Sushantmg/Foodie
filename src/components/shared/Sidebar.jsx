@@ -3,10 +3,10 @@ import { useApp } from "../../context/AppContext";
 import "./Sidebar.css";
 
 const navItems = [
-  { id: "pos", label: "POS", icon: "🛒", roles: ["admin", "manager", "staff"] },
-  { id: "orders", label: "Orders", icon: "📋", roles: ["admin", "manager", "staff"] },
+  { id: "pos", label: "POS", icon: "🛒", shortcut: "F1", roles: ["admin", "manager", "staff"] },
+  { id: "orders", label: "Orders", icon: "📋", shortcut: "F2", roles: ["admin", "manager", "staff"] },
   { id: "tables", label: "Tables", icon: "🪑", roles: ["admin", "manager", "staff"] },
-  { id: "dashboard", label: "Dashboard", icon: "📊", roles: ["admin", "manager"] },
+  { id: "dashboard", label: "Dashboard", icon: "📊", shortcut: "F3", roles: ["admin", "manager"] },
   { id: "reports", label: "Reports", icon: "📈", roles: ["admin", "manager"] },
   { id: "menu-mgmt", label: "Menu", icon: "📝", roles: ["admin", "manager"] },
   { id: "inventory", label: "Inventory", icon: "📦", roles: ["admin", "manager"] },
@@ -41,7 +41,12 @@ export default function Sidebar({ collapsed, onToggle }) {
             title={collapsed ? item.label : ""}
           >
             <span className="nav-icon">{item.icon}</span>
-            {!collapsed && <span className="nav-label">{item.label}</span>}
+            {!collapsed && (
+              <>
+                <span className="nav-label">{item.label}</span>
+                {item.shortcut && <span className="nav-shortcut">{item.shortcut}</span>}
+              </>
+            )}
           </button>
         ))}
       </nav>

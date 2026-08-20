@@ -28,9 +28,7 @@
 .os-num.cancelled { color: #ef4444; }
 .os-label { font-size: 12px; color: #94a3b8; margin-top: 4px; }
 
-.orders-section {
-  margin-bottom: 24px;
-}
+.orders-section { margin-bottom: 24px; }
 
 .orders-section h3 {
   font-size: 16px;
@@ -40,15 +38,20 @@
 
 .no-orders {
   text-align: center;
-  padding: 32px;
+  padding: 48px 32px;
   color: #94a3b8;
   background: white;
   border-radius: 12px;
 }
 
+.no-orders.small { padding: 24px; }
+
+.no-orders-icon { font-size: 48px; display: block; margin-bottom: 12px; }
+.no-orders h4 { color: #334155; margin-bottom: 4px; }
+
 .orders-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: 14px;
 }
 
@@ -72,19 +75,14 @@
   border-bottom: 1px solid #f1f5f9;
 }
 
-.oc-id {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.oc-hash { font-weight: 700; color: #6366f1; }
+.oc-id { display: flex; align-items: center; gap: 8px; }
+.oc-hash { font-weight: 700; color: #6366f1; font-size: 15px; }
 
 .oc-status {
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: 8px;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: capitalize;
 }
 
@@ -95,6 +93,41 @@
 
 .oc-type { font-size: 13px; color: #64748b; }
 .oc-total { font-weight: 700; color: #1a1a2e; }
+
+.oc-timer-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: #fffbeb;
+  border-bottom: 1px solid #fef3c7;
+}
+
+.order-timer {
+  font-size: 13px;
+  font-weight: 700;
+  color: #d97706;
+  font-variant-numeric: tabular-nums;
+}
+
+.order-timer.long {
+  color: #ef4444;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.oc-note-badge {
+  font-size: 11px;
+  color: #6366f1;
+  background: #eef2ff;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 500;
+}
 
 .oc-items { padding: 10px 16px; }
 
@@ -112,13 +145,16 @@
   align-items: center;
   padding: 10px 16px;
   background: #f8fafc;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .oc-meta {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   font-size: 12px;
   color: #64748b;
+  flex-wrap: wrap;
 }
 
 .oc-time { font-size: 12px; color: #94a3b8; }
@@ -135,8 +171,82 @@
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.15s;
 }
 
 .oc-btn.ready { background: #d1fae5; color: #059669; }
+.oc-btn.ready:hover { background: #a7f3d0; }
 .oc-btn.complete { background: #e0e7ff; color: #4f46e5; }
+.oc-btn.complete:hover { background: #c7d2fe; }
 .oc-btn.cancel { background: #fee2e2; color: #ef4444; }
+.oc-btn.cancel:hover { background: #fecaca; }
+.oc-btn.receipt { background: #f1f5f9; color: #64748b; }
+.oc-btn.receipt:hover { background: #e2e8f0; }
+.oc-btn.reorder { background: #fef3c7; color: #d97706; }
+.oc-btn.reorder:hover { background: #fde68a; }
+
+/* Receipt Preview */
+.receipt-preview {
+  text-align: center;
+}
+
+.receipt-paper {
+  background: white;
+  border: 1px dashed #d1d5db;
+  padding: 24px 20px;
+  max-width: 320px;
+  margin: 0 auto 16px;
+  font-family: "Courier New", monospace;
+  font-size: 13px;
+  color: #1a1a2e;
+  text-align: left;
+}
+
+.receipt-center { text-align: center; margin-bottom: 8px; }
+.receipt-center .receipt-logo { font-size: 32px; display: block; margin-bottom: 4px; }
+.receipt-center h3 { font-size: 14px; margin-bottom: 2px; }
+.receipt-center p { font-size: 11px; color: #64748b; }
+
+.receipt-divider {
+  color: #d1d5db;
+  font-size: 12px;
+  margin: 8px 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 2px 0;
+}
+
+.receipt-total {
+  font-weight: 700;
+  font-size: 14px;
+  padding-top: 4px;
+  border-top: 1px dashed #d1d5db;
+  margin-top: 4px;
+}
+
+.receipt-items { margin: 4px 0; }
+
+.receipt-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 2px 0;
+}
+
+.receipt-footer { margin-top: 12px; font-size: 11px; color: #94a3b8; }
+
+.receipt-close {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  background: #6366f1;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}

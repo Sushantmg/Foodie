@@ -495,17 +495,23 @@
 - **Cart management** — add, remove, quantity controls with smooth animations
 - **Item modifiers** — Extra Cheese, Spicy, Gluten-Free, No Onions, Extra Sauce
 - **Order types** — Dine-In (20-table selection), Takeaway, Delivery
+- **Table status mini-view** — see all 20 table statuses directly in POS
 - **Discounts** — Fixed amount or percentage-based
 - **Customer linking** — Assign orders to loyalty members for points
 - **Multi-payment** — Cash, Card, UPI with visual selection
+- **Order notes** — Add special instructions before placing order
 - **Tax calculation** — Configurable tax rate (default 8%)
 - **Auto stock deduction** on order placement
-- **Responsive grid layout** — Properly spaced product cards with clear text
+- **Keyboard shortcuts** — F1 (POS), F2 (Orders), F3 (Dashboard), F4 (Tables), Ctrl+Enter (Checkout)
 
 ### 📋 Order Management
 - Real-time status tracking: **Preparing → Ready → Completed**
+- **Live order timer** — shows elapsed time with color warning after 15 min
+- **Receipt preview** — view printable receipt for any order before/during/after
+- **Quick reorder** — repeat any completed order with one click
+- **Order notes** — attach special instructions to any order
 - Cancel orders with table auto-release
-- View order details (items, total, time, staff who created)
+- View order details (items, total, time, staff, payment method)
 - Visual order cards with status color coding
 
 ### 🪑 Table Management
@@ -542,7 +548,8 @@
 ### 📦 Inventory Management
 - Track stock levels across all 24 items
 - **Low stock** & **out-of-stock** visual alerts
-- **One-click restock** (+50 units)
+- **Custom restock amounts** — type any quantity and press Enter
+- **Bulk restock** — one-click restock all low stock items by 50 units
 - Sort by name, stock level, or inventory value
 - Filter by stock status (All/Low/Out/In Stock)
 
@@ -578,6 +585,7 @@
 - **Loyalty program** toggle & points-per-dollar config
 - **Receipt** custom header/footer messages
 - **Opening hours** per day of week with open/close toggle
+- **Data management** — reset all data to defaults with confirmation
 
 ### 🌙 Dark Mode
 - Toggle between light and dark themes
