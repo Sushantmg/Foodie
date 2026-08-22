@@ -302,6 +302,14 @@ export function AppProvider({ children }) {
 
   const placeOrder = (discount = 0, paymentMethod = "cash", customerId = null, notes = "") => {
     if (state.cart.length === 0) return null;
+
+    // Block ordering on occupied tables
+    if (state.orderType === "dine-in") {
+      const table = state.tables.find((t) => t.number === state.tableNumber);
+      if (table && table.status === "occupied") {
+        return null;
+      }
+    }
     const subtotal = getCartTotal();
     const discountAmount = discount;
     const taxable = subtotal - discountAmount;

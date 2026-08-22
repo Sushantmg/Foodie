@@ -23,6 +23,22 @@ export default function POS() {
 
   const categories = ["All", "Appetizers", "Main Course", "Desserts", "Beverages"];
 
+  const currentTable = tables.find((t) => t.number === tableNumber);
+  const isCurrentTableOccupied = orderType === "dine-in" && currentTable?.status === "occupied";
+
+  useEffect(() => {
+    if (isCurrentTableOccupied && orderType === "dine-in") {
+      const available = tables.find((t) => t.status === "available");
+      if (available) {
+        dispatch({ type: "SET_TABLE", payload: available.number });
+        notify("Table " + tableNumber + " is occupied. Switched to Table " + available.number, "warning");
+      } else {
+        dispatch({ type: "SET_ORDER_TYPE", payload: "takeaway" });
+        notify("All tables occupied. Switched to Takeaway", "warning");
+      }
+    }
+  }, [isCurrentTableOccupied]);
+
   const filteredItems = menu.filter((item) => {
     const matchCat = selectedCategory === "All" || item.category === selectedCategory;
     const matchSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -164,17 +180,22 @@ export default function POS() {
             <option value="delivery">🚗 Delivery</option>
           </select>
           {orderType === "dine-in" && (
-            <select value={tableNumber} onChange={(e) => dispatch({ type: "SET_TABLE", payload: Number(e.target.value) })}>
-              {[...Array(20)].map((_, i) => {
-                const table = tables.find((t) => t.number === i + 1);
-                const isOccupied = table?.status === "occupied";
-                return (
-                  <option key={i + 1} value={i + 1} disabled={isOccupied && table?.number !== tableNumber}>
-                    Table {i + 1} {isOccupied ? "🔴" : "🟢"}
-                  </option>
-                );
-              })}
-            </select>
+            <>
+              <select value={tableNumber} onChange={(e) => dispatch({ type: "SET_TABLE", payload: Number(e.target.value) })}>
+                {[...Array(20)].map((_, i) => {
+                  const table = tables.find((t) => t.number === i + 1);
+                  const isOccupied = table?.status === "occupied";
+                  return (
+                    <option key={i + 1} value={i + 1} disabled={isOccupied}>
+                      Table {i + 1} {isOccupied ? "🔴 OCCUPIED" : "🟢 Available"}
+                    </option>
+                  );
+                })}
+              </select>
+              {isCurrentTableOccupied && (
+                <span className="table-occupied-badge">⚠️ Table {tableNumber} is in use</span>
+              )}
+            </>
           )}
         </div>
 
@@ -271,7 +292,11 @@ export default function POS() {
               </div>
             </div>
 
-            {!showPayment ? (
+            {isCurrentTableOccupied ? (
+              <div className="occupied-warning">
+                <span>⚠️ Table {tableNumber} is occupied. Select an available table to place order.</span>
+              </div>
+            ) : !showPayment ? (
               <button className="checkout-btn" onClick={() => setShowPayment(true)}>
                 Proceed to Payment (Ctrl+Enter)
               </button>
