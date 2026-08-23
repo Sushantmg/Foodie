@@ -859,3 +859,75 @@
   border-radius: 6px;
   margin-left: 8px;
 }
+
+/* Popular Items Bar */
+.pos-popular-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: white;
+  border-bottom: 1px solid #f1f5f9;
+  overflow-x: auto;
+}
+
+.popular-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #f59e0b;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.popular-item-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border: 1px solid #fef3c7;
+  border-radius: 20px;
+  background: #fffbeb;
+  color: #92400e;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.popular-item-btn:hover {
+  background: #fde68a;
+  border-color: #f59e0b;
+  transform: scale(1.05);
+}
+
+/* Customer Phone Lookup */
+.customer-lookup {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+}
+
+.phone-search-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+}
+
+.phone-search-input:focus { border-color: #6366f1; }
+
+.customer-found-badge {
+  display: flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: #d1fae5;
+  color: #059669;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: capitalize;
+  white-space: nowrap;
+}

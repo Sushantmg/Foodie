@@ -250,3 +250,84 @@
   font-weight: 600;
   cursor: pointer;
 }
+
+.orders-filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.orders-search {
+  flex: 1;
+  min-width: 240px;
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  background: white;
+}
+
+.orders-search:focus { border-color: #6366f1; }
+
+.orders-filter-btns {
+  display: flex;
+  gap: 4px;
+  background: white;
+  padding: 4px;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.of-btn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.of-btn.active {
+  background: #6366f1;
+  color: white;
+}
+
+.of-btn:hover:not(.active) {
+  background: #f1f5f9;
+}
+
+.receipt-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.receipt-print {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  background: #059669;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.receipt-print:hover { background: #047857; }
+
+@media print {
+  body * { visibility: hidden; }
+  .receipt-paper, .receipt-paper * { visibility: visible; }
+  .receipt-paper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border: none;
+    box-shadow: none;
+  }
+}

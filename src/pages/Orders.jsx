@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useApp } from "../context/AppContext";
 import { formatCurrency, formatTime } from "../utils/helpers";
 import Modal from "../components/shared/Modal";
+import { playOrderReady, playOrderCancelled } from "../utils/sounds";
 import "./Orders.css";
 
 function OrderTimer({ createdAt }) {
@@ -72,7 +73,10 @@ function ReceiptPreview({ order, settings, onClose }) {
           <p>{settings.receiptFooter}</p>
         </div>
       </div>
-      <button className="receipt-close" onClick={onClose}>Close</button>
+      <div className="receipt-actions">
+        <button className="receipt-print" onClick={() => window.print()}>Print Receipt</button>
+        <button className="receipt-close" onClick={onClose}>Close</button>
+      </div>
     </div>
   );
 }
@@ -80,14 +84,29 @@ function ReceiptPreview({ order, settings, onClose }) {
 export default function Orders() {
   const { orders, dispatch, notify, settings, menu } = useApp();
   const [showReceipt, setShowReceipt] = useState(null);
+  const [orderSearch, setOrderSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
-  const activeOrders = orders.filter((o) => o.status === "preparing" || o.status === "ready");
-  const completedOrders = orders.filter((o) => o.status === "completed");
-  const cancelledOrders = orders.filter((o) => o.status === "cancelled");
+  const filteredOrders = useMemo(() => {
+    return orders.filter((o) => {
+      const matchSearch = orderSearch === "" ||
+        o.id.toLowerCase().includes(orderSearch.toLowerCase()) ||
+        o.createdByName?.toLowerCase().includes(orderSearch.toLowerCase()) ||
+        String(o.table).includes(orderSearch);
+      const matchStatus = statusFilter === "all" || o.status === statusFilter;
+      return matchSearch && matchStatus;
+    });
+  }, [orders, orderSearch, statusFilter]);
+
+  const activeOrders = filteredOrders.filter((o) => o.status === "preparing" || o.status === "ready");
+  const completedOrders = filteredOrders.filter((o) => o.status === "completed");
+  const cancelledOrders = filteredOrders.filter((o) => o.status === "cancelled");
 
   const handleStatus = (orderId, status) => {
     dispatch({ type: "UPDATE_ORDER_STATUS", payload: { orderId, status } });
     notify(`Order updated to ${status}`, status === "completed" ? "success" : "info");
+    if (status === "ready") playOrderReady();
+    if (status === "cancelled") playOrderCancelled();
   };
 
   const handleReorder = (order) => {
@@ -105,6 +124,27 @@ export default function Orders() {
 
   return (
     <div className="orders-page">
+      <div className="orders-filters">
+        <input
+          type="text"
+          placeholder="Search by order ID, staff, or table..."
+          value={orderSearch}
+          onChange={(e) => setOrderSearch(e.target.value)}
+          className="orders-search"
+        />
+        <div className="orders-filter-btns">
+          {["all", "preparing", "ready", "completed", "cancelled"].map((s) => (
+            <button
+              key={s}
+              className={`of-btn ${statusFilter === s ? "active" : ""}`}
+              onClick={() => setStatusFilter(s)}
+            >
+              {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="orders-stats">
         <div className="os-card">
           <span className="os-num preparing">{activeOrders.filter((o) => o.status === "preparing").length}</span>

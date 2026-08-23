@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useApp } from "../context/AppContext";
 import { modifiers } from "../data/menuData";
 import { formatCurrency } from "../utils/helpers";
+import { playOrderPlaced } from "../utils/sounds";
 import "./POS.css";
 
 export default function POS() {
@@ -20,6 +21,9 @@ export default function POS() {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderNotes, setOrderNotes] = useState("");
   const [showTables, setShowTables] = useState(false);
+  const [phoneSearch, setPhoneSearch] = useState("");
+  const [foundCustomer, setFoundCustomer] = useState(null);
+  const [showQuickAdd, setShowQuickAdd] = useState(false);
 
   const categories = ["All", "Appetizers", "Main Course", "Desserts", "Beverages"];
 
@@ -44,6 +48,32 @@ export default function POS() {
     const matchSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchCat && matchSearch && item.available;
   });
+
+  // Compute popular items from order history
+  const popularItems = useMemo(() => {
+    const counts = {};
+    orders.forEach((o) => o.items.forEach((item) => {
+      if (!counts[item.id]) counts[item.id] = { item, count: 0 };
+      counts[item.id].count += item.quantity;
+    }));
+    return Object.values(counts).sort((a, b) => b.count - a.count).slice(0, 5).map((c) => c.item);
+  }, [orders]);
+
+  // Customer phone lookup
+  const handlePhoneSearch = (phone) => {
+    setPhoneSearch(phone);
+    if (phone.length >= 3) {
+      const found = customers.find((c) => c.phone?.includes(phone) || c.name?.toLowerCase().includes(phone.toLowerCase()));
+      setFoundCustomer(found || null);
+      if (found) {
+        setSelectedCustomer(found.id);
+        notify(`Found: ${found.name} (${found.tier})`);
+      }
+    } else {
+      setFoundCustomer(null);
+      setSelectedCustomer("");
+    }
+  };
 
   const subtotal = getCartTotal();
   const discountAmount = discountType === "percent" ? subtotal * (discount / 100) : discount;
@@ -84,12 +114,15 @@ export default function POS() {
         });
       }
       setOrderPlaced(true);
+      playOrderPlaced();
       setTimeout(() => {
         setOrderPlaced(false);
         setShowPayment(false);
         setDiscount(0);
         setSelectedCustomer("");
         setOrderNotes("");
+        setPhoneSearch("");
+        setFoundCustomer(null);
         notify(`Order #${order.id.slice(-4).toUpperCase()} placed successfully!`);
       }, 1500);
     }
@@ -136,6 +169,17 @@ export default function POS() {
             ))}
           </div>
         </div>
+
+        {popularItems.length > 0 && (
+          <div className="pos-popular-bar">
+            <span className="popular-label">⭐ Popular:</span>
+            {popularItems.map((item) => (
+              <button key={item.id} className="popular-item-btn" onClick={() => addToCart(item)}>
+                {item.image} {item.name}
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className="pos-items-grid">
           {filteredItems.map((item) => (
@@ -320,6 +364,21 @@ export default function POS() {
                 </div>
                 <div className="pay-row">
                   <label>Customer:</label>
+                  <div className="customer-lookup">
+                    <input
+                      type="text"
+                      placeholder="Search by name or phone..."
+                      value={foundCustomer ? foundCustomer.name : phoneSearch}
+                      onChange={(e) => handlePhoneSearch(e.target.value)}
+                      className="phone-search-input"
+                    />
+                    {foundCustomer && (
+                      <span className="customer-found-badge">{foundCustomer.tier}</span>
+                    )}
+                  </div>
+                </div>
+                <div className="pay-row">
+                  <label></label>
                   <select value={selectedCustomer} onChange={(e) => setSelectedCustomer(e.target.value)}>
                     <option value="">Walk-in</option>
                     {customers.map((c) => (
