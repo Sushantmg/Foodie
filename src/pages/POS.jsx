@@ -49,6 +49,19 @@ export default function POS() {
     return matchCat && matchSearch && item.available;
   });
 
+  // Compute popular item IDs for badge display
+  const popularItemIds = useMemo(() => {
+    const counts = {};
+    orders.forEach((o) => o.items.forEach((item) => {
+      if (!counts[item.id]) counts[item.id] = 0;
+      counts[item.id] += item.quantity;
+    }));
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([id]) => id);
+  }, [orders]);
+
   // Compute popular items from order history
   const popularItems = useMemo(() => {
     const counts = {};
@@ -87,6 +100,7 @@ export default function POS() {
     if (e.key === "F2") { e.preventDefault(); dispatch({ type: "SET_ACTIVE_TAB", payload: "orders" }); }
     if (e.key === "F3") { e.preventDefault(); dispatch({ type: "SET_ACTIVE_TAB", payload: "dashboard" }); }
     if (e.key === "F4") { e.preventDefault(); setShowTables(!showTables); }
+    if (e.key === "F5") { e.preventDefault(); dispatch({ type: "SET_ACTIVE_TAB", payload: "kds" }); }
     if (e.key === "Escape") {
       setShowPayment(false);
       setShowModifiers(null);
@@ -185,6 +199,7 @@ export default function POS() {
           {filteredItems.map((item) => (
             <div key={item.id} className="pos-item" onClick={() => addToCart(item)}>
               <div className="pos-item-top">
+                {popularItemIds.includes(item.id) && <span className="bestseller-badge">BESTSELLER</span>}
                 <span className="pos-item-img">{item.image}</span>
                 {item.stock <= settings.lowStockThreshold && (
                   <span className={`stock-badge ${item.stock === 0 ? "out" : "low"}`}>
@@ -454,6 +469,7 @@ export default function POS() {
         <span title="F2: Orders">F2</span>
         <span title="F3: Dashboard">F3</span>
         <span title="F4: Tables">F4</span>
+        <span title="F5: Kitchen">F5</span>
         <span title="Ctrl+Enter: Checkout">⌘↵</span>
       </div>
     </div>

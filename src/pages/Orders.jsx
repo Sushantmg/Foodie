@@ -102,6 +102,12 @@ export default function Orders() {
   const completedOrders = filteredOrders.filter((o) => o.status === "completed");
   const cancelledOrders = filteredOrders.filter((o) => o.status === "cancelled");
 
+  const handlePriority = (orderId, currentPriority) => {
+    const newPriority = currentPriority === "rush" ? "normal" : "rush";
+    dispatch({ type: "UPDATE_ORDER_PRIORITY", payload: { orderId, priority: newPriority } });
+    if (newPriority === "rush") notify("Order marked as RUSH!", "warning");
+  };
+
   const handleStatus = (orderId, status) => {
     dispatch({ type: "UPDATE_ORDER_STATUS", payload: { orderId, status } });
     notify(`Order updated to ${status}`, status === "completed" ? "success" : "info");
@@ -206,6 +212,9 @@ export default function Orders() {
                   </div>
                   <div className="oc-actions">
                     <button className="oc-btn receipt" onClick={() => setShowReceipt(order)} title="View receipt">🧾</button>
+                    <button className={`oc-btn ${order.priority === "rush" ? "unrush" : "rush"}`} onClick={() => handlePriority(order.id, order.priority)}>
+                      {order.priority === "rush" ? "Unrush" : "Rush"}
+                    </button>
                     {order.status === "preparing" && (
                       <button className="oc-btn ready" onClick={() => handleStatus(order.id, "ready")}>Ready</button>
                     )}

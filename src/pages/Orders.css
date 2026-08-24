@@ -331,3 +331,8 @@
     box-shadow: none;
   }
 }
+
+.oc-btn.rush { background: #fef3c7; color: #d97706; }
+.oc-btn.rush:hover { background: #fde68a; }
+.oc-btn.unrush { background: #fee2e2; color: #ef4444; }
+.oc-btn.unrush:hover { background: #fecaca; }

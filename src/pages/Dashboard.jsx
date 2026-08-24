@@ -55,6 +55,54 @@ export default function Dashboard() {
         <div className="dash-date">{new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</div>
       </div>
 
+      <div className="daily-summary">
+        <div className="ds-left">
+          <h3>Today's Snapshot</h3>
+          <div className="ds-items">
+            <div className="ds-item">
+              <span className="ds-val">{formatCurrency(totalRevenue)}</span>
+              <span className="ds-lbl">Revenue</span>
+            </div>
+            <div className="ds-item">
+              <span className="ds-val">{todayOrders.length}</span>
+              <span className="ds-lbl">Orders</span>
+            </div>
+            <div className="ds-item">
+              <span className="ds-val">{completedOrders.length}</span>
+              <span className="ds-lbl">Completed</span>
+            </div>
+            <div className="ds-item">
+              <span className="ds-val">{pendingOrders.length}</span>
+              <span className="ds-lbl">Pending</span>
+            </div>
+            <div className="ds-item">
+              <span className="ds-val">{formatCurrency(avgOrderValue)}</span>
+              <span className="ds-lbl">Avg Order</span>
+            </div>
+            <div className="ds-item">
+              <span className="ds-val">{lowStockItems.length}</span>
+              <span className="ds-lbl">Low Stock</span>
+            </div>
+          </div>
+        </div>
+        <div className="ds-right">
+          <div className="ds-bar-chart">
+            <span className="ds-bar-label">Completion Rate</span>
+            <div className="ds-bar-bg">
+              <div className="ds-bar-fill" style={{ width: todayOrders.length > 0 ? `${(completedOrders.length / todayOrders.length) * 100}%` : "0%" }} />
+            </div>
+            <span className="ds-bar-pct">{todayOrders.length > 0 ? Math.round((completedOrders.length / todayOrders.length) * 100) : 0}%</span>
+          </div>
+          <div className="ds-bar-chart">
+            <span className="ds-bar-label">Revenue Target ($1000)</span>
+            <div className="ds-bar-bg">
+              <div className="ds-bar-fill revenue" style={{ width: `${Math.min((totalRevenue / 1000) * 100, 100)}%` }} />
+            </div>
+            <span className="ds-bar-pct">{Math.round((totalRevenue / 1000) * 100)}%</span>
+          </div>
+        </div>
+      </div>
+
       <div className="dash-cards">
         <div className="dc revenue">
           <div className="dc-icon">💰</div>

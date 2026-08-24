@@ -15,6 +15,7 @@ import Staff from "./pages/Staff";
 import Customers from "./pages/Customers";
 import Chatbot from "./pages/Chatbot";
 import Settings from "./pages/Settings";
+import KDS from "./pages/KDS";
 import "./App.css";
 
 function AppLayout() {
@@ -34,6 +35,7 @@ function AppLayout() {
       case "inventory": return <Inventory />;
       case "staff": return <Staff />;
       case "customers": return <Customers />;
+      case "kds": return <KDS />;
       case "chatbot": return <Chatbot />;
       case "settings": return <Settings />;
       default: return <POS />;

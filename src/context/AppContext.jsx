@@ -128,6 +128,16 @@ function appReducer(state, action) {
       };
     }
 
+    case "UPDATE_ORDER_PRIORITY": {
+      const { orderId, priority } = action.payload;
+      return {
+        ...state,
+        orders: state.orders.map((o) =>
+          o.id === orderId ? { ...o, priority } : o
+        ),
+      };
+    }
+
     case "UPDATE_ORDER_STATUS": {
       const { orderId, status } = action.payload;
       const updatedOrders = state.orders.map((o) =>

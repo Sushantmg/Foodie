@@ -931,3 +931,21 @@
   text-transform: capitalize;
   white-space: nowrap;
 }
+
+.bestseller-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  padding: 2px 6px;
+  background: #f59e0b;
+  color: white;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  z-index: 2;
+}
+
+.pos-item-top {
+  position: relative;
+}
