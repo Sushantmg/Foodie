@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useApp } from "../context/AppContext";
 import { loyaltyTiers } from "../data/customers";
-import { formatCurrency, formatDate, generateId } from "../utils/helpers";
+import { formatCurrency, generateId } from "../utils/helpers";
 import Modal from "../components/shared/Modal";
 import "./Customers.css";
 

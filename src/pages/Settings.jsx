@@ -4,7 +4,7 @@ import { storage } from "../utils/helpers";
 import "./Settings.css";
 
 export default function Settings() {
-  const { settings, dispatch, notify, currentUser } = useApp();
+  const { settings, dispatch, notify } = useApp();
   const [form, setForm] = useState({ ...settings });
   const [showConfirm, setShowConfirm] = useState(false);
 

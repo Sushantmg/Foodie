@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useApp } from "../context/AppContext";
-import { formatCurrency, formatTime } from "../utils/helpers";
+import { formatCurrency } from "../utils/helpers";
 import { playOrderReady, playNotification } from "../utils/sounds";
 import "./KDS.css";
 

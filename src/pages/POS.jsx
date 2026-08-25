@@ -23,7 +23,6 @@ export default function POS() {
   const [showTables, setShowTables] = useState(false);
   const [phoneSearch, setPhoneSearch] = useState("");
   const [foundCustomer, setFoundCustomer] = useState(null);
-  const [showQuickAdd, setShowQuickAdd] = useState(false);
 
   const categories = ["All", "Appetizers", "Main Course", "Desserts", "Beverages"];
 

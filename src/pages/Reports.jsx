@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useApp } from "../context/AppContext";
-import { formatCurrency, formatDate } from "../utils/helpers";
+import { formatCurrency } from "../utils/helpers";
 import "./Reports.css";
 
 export default function Reports() {

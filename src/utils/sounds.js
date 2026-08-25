@@ -26,7 +26,7 @@ function playTone(frequency, duration, type = "sine", volume = 0.3) {
 
     oscillator.start(ctx.currentTime);
     oscillator.stop(ctx.currentTime + duration);
-  } catch (e) {
+  } catch {
     // Audio not supported, fail silently
   }
 }
