@@ -124,6 +124,40 @@ export default function Login() {
           </form>
         </div>
       </div>
+
+      <div className="trust-bar">
+        <div className="trust-item">
+          <span className="trust-icon">🚚</span>
+          <div className="trust-text">
+            <strong>Free Shipping</strong>
+            <p>On orders over $50</p>
+          </div>
+        </div>
+        <div className="trust-divider" />
+        <div className="trust-item">
+          <span className="trust-icon">🔄</span>
+          <div className="trust-text">
+            <strong>Easy Returns</strong>
+            <p>30-day return policy</p>
+          </div>
+        </div>
+        <div className="trust-divider" />
+        <div className="trust-item">
+          <span className="trust-icon">🔒</span>
+          <div className="trust-text">
+            <strong>Secure Payment</strong>
+            <p>100% encrypted</p>
+          </div>
+        </div>
+        <div className="trust-divider" />
+        <div className="trust-item">
+          <span className="trust-icon">💬</span>
+          <div className="trust-text">
+            <strong>24/7 Support</strong>
+            <p>Dedicated help center</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

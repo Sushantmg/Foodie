@@ -24,7 +24,7 @@ export default function POS() {
   const [phoneSearch, setPhoneSearch] = useState("");
   const [foundCustomer, setFoundCustomer] = useState(null);
 
-  const categories = ["All", "Appetizers", "Main Course", "Desserts", "Beverages"];
+  const categories = ["All", "Appetizers", "Main Course", "Meat", "Dairy", "Desserts", "Beverages"];
 
   const currentTable = tables.find((t) => t.number === tableNumber);
   const isCurrentTableOccupied = orderType === "dine-in" && currentTable?.status === "occupied";

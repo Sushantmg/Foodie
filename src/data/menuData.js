@@ -13,6 +13,17 @@ export const menuData = [
   { id: 10, name: "BBQ Ribs", category: "Main Course", price: 22.99, cost: 9.00, image: "🍖", description: "Slow-cooked pork ribs with BBQ glaze", available: true, prepTime: 30, stock: 15 },
   { id: 11, name: "Mushroom Risotto", category: "Main Course", price: 16.99, cost: 4.00, image: "🍄", description: "Creamy arborio rice with wild mushrooms", available: true, prepTime: 22, stock: 25 },
   { id: 12, name: "Fish & Chips", category: "Main Course", price: 13.99, cost: 4.20, image: "🐟", description: "Beer-battered cod with crispy fries", available: true, prepTime: 15, stock: 30 },
+  // Meat
+  { id: 25, name: "Grilled Lamb Chops", category: "Meat", price: 26.99, cost: 11.00, image: "🍖", description: "Herb-crusted lamb chops with rosemary jus", available: true, prepTime: 25, stock: 20 },
+  { id: 26, name: "Chicken Tikka", category: "Meat", price: 15.99, cost: 5.50, image: "🍗", description: "Tandoori spiced chicken with mint chutney", available: true, prepTime: 18, stock: 30 },
+  { id: 27, name: "Pulled Pork Sandwich", category: "Meat", price: 14.49, cost: 4.80, image: "🥪", description: "Slow-smoked pulled pork with coleslaw", available: true, prepTime: 10, stock: 25 },
+  { id: 28, name: "Beef Tacos", category: "Meat", price: 12.99, cost: 4.00, image: "🌮", description: "Seasoned ground beef with salsa and guacamole", available: true, prepTime: 12, stock: 35 },
+  { id: 29, name: "Duck Confit", category: "Meat", price: 28.99, cost: 12.00, image: "🦆", description: "Crispy duck leg with orange glaze and potatoes", available: true, prepTime: 30, stock: 12 },
+  // Dairy
+  { id: 30, name: "Mac & Cheese", category: "Dairy", price: 10.99, cost: 3.00, image: "🧀", description: "Creamy three-cheese baked macaroni", available: true, prepTime: 15, stock: 40 },
+  { id: 31, name: "Greek Yogurt Parfait", category: "Dairy", price: 7.49, cost: 2.00, image: "🥣", description: "Layered yogurt with granola and fresh berries", available: true, prepTime: 5, stock: 45 },
+  { id: 32, name: "Mozzarella Sticks", category: "Dairy", price: 8.99, cost: 2.50, image: "🧈", description: "Crispy fried mozzarella with marinara dip", available: true, prepTime: 8, stock: 35 },
+  { id: 33, name: "Ricotta Pancakes", category: "Dairy", price: 9.49, cost: 2.20, image: "🥞", description: "Fluffy ricotta pancakes with maple syrup", available: true, prepTime: 10, stock: 30 },
   // Desserts
   { id: 13, name: "Tiramisu", category: "Desserts", price: 8.99, cost: 2.80, image: "🍰", description: "Classic Italian coffee-flavored dessert", available: true, prepTime: 5, stock: 20 },
   { id: 14, name: "Chocolate Lava Cake", category: "Desserts", price: 9.99, cost: 3.00, image: "🍫", description: "Warm chocolate cake with molten center", available: true, prepTime: 15, stock: 20 },
@@ -29,7 +40,7 @@ export const menuData = [
   { id: 24, name: "Hot Chocolate", category: "Beverages", price: 3.99, cost: 0.70, image: "☕", description: "Rich cocoa with whipped cream", available: true, prepTime: 3, stock: 50 },
 ];
 
-export const categories = ["All", "Appetizers", "Main Course", "Desserts", "Beverages"];
+export const categories = ["All", "Appetizers", "Main Course", "Meat", "Dairy", "Desserts", "Beverages"];
 
 export const modifiers = [
   { id: "m1", name: "Extra Cheese", price: 1.50 },

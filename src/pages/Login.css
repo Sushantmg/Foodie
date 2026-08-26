@@ -1,10 +1,12 @@
 .login-page {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
   padding: 20px;
+  gap: 24px;
 }
 
 .login-container {
@@ -233,6 +235,48 @@
   color: #6366f1;
 }
 
+.trust-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+  padding: 28px 48px;
+  margin-top: 24px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 32px;
+}
+
+.trust-icon {
+  font-size: 28px;
+}
+
+.trust-text strong {
+  display: block;
+  font-size: 14px;
+  color: white;
+  font-weight: 700;
+}
+
+.trust-text p {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.trust-divider {
+  width: 1px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
 @media (max-width: 768px) {
   .login-container {
     flex-direction: column;
@@ -249,5 +293,19 @@
 
   .login-right {
     padding: 32px;
+  }
+
+  .trust-bar {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 20px 24px;
+  }
+
+  .trust-item {
+    padding: 8px 16px;
+  }
+
+  .trust-divider {
+    display: none;
   }
 }
