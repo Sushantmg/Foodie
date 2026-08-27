@@ -9,7 +9,7 @@ export default function POS() {
   const {
     menu, cart, selectedCategory, searchQuery, dispatch,
     addToCart, removeFromCart, clearCart, getCartTotal, getCartItemCount,
-    placeOrder, notify, tableNumber, orderType, customers, settings, tables,
+    placeOrder, notify, tableNumber, orderType, customers, settings, tables, orders,
   } = useApp();
 
   const [showPayment, setShowPayment] = useState(false);
