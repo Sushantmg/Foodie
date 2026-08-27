@@ -12,6 +12,7 @@ const navItems = [
   { id: "inventory", label: "Inventory", icon: "📦", roles: ["admin", "manager"] },
   { id: "staff", label: "Staff", icon: "👥", roles: ["admin", "manager"] },
   { id: "customers", label: "Customers", icon: "💎", roles: ["admin", "manager"] },
+  { id: "kds", label: "Kitchen", icon: "👨‍🍳", shortcut: "F5", roles: ["admin", "manager", "staff"] },
   { id: "chatbot", label: "Chatbot", icon: "💬", shortcut: "F6", roles: ["admin", "manager", "staff"] },
   { id: "settings", label: "Settings", icon: "⚙️", roles: ["admin"] },
 ];
