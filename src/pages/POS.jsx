@@ -3,6 +3,7 @@ import { useApp } from "../context/AppContext";
 import { modifiers } from "../data/menuData";
 import { formatCurrency } from "../utils/helpers";
 import { playOrderPlaced } from "../utils/sounds";
+import Modal from "../components/shared/Modal";
 import "./POS.css";
 
 export default function POS() {
@@ -23,6 +24,7 @@ export default function POS() {
   const [showTables, setShowTables] = useState(false);
   const [phoneSearch, setPhoneSearch] = useState("");
   const [foundCustomer, setFoundCustomer] = useState(null);
+  const [detailItem, setDetailItem] = useState(null);
 
   const categories = ["All", "Appetizers", "Main Course", "Meat", "Dairy", "Desserts", "Beverages"];
 
@@ -211,7 +213,20 @@ export default function POS() {
                 <p>{item.description}</p>
                 <div className="pos-item-bottom">
                   <span className="pos-item-price">{formatCurrency(item.price)}</span>
-                  <button className="pos-add-btn" disabled={item.stock === 0}>+</button>
+                  <div className="pos-item-actions">
+                    <button
+                      className="pos-details-btn"
+                      onClick={(e) => { e.stopPropagation(); setDetailItem(item); }}
+                      title="View details"
+                    >
+                      👁️
+                    </button>
+                    <button
+                      className="pos-add-btn"
+                      onClick={(e) => { e.stopPropagation(); addToCart(item); }}
+                      disabled={item.stock === 0}
+                    >+</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -471,6 +486,54 @@ export default function POS() {
         <span title="F5: Kitchen">F5</span>
         <span title="Ctrl+Enter: Checkout">⌘↵</span>
       </div>
+
+      <Modal isOpen={!!detailItem} onClose={() => setDetailItem(null)} title={detailItem?.name || "Item Details"}>
+        {detailItem && (
+          <div className="item-detail">
+            <div className="item-detail-hero">
+              <span className="item-detail-img">{detailItem.image}</span>
+              <div className="item-detail-head">
+                <span className="item-detail-cat">{detailItem.category}</span>
+                {popularItemIds.includes(detailItem.id) && <span className="bestseller-badge-static">⭐ BESTSELLER</span>}
+              </div>
+            </div>
+            <div className="item-detail-info">
+              <h2>{detailItem.name}</h2>
+              <p className="item-detail-desc">{detailItem.description}</p>
+              <div className="item-detail-meta">
+                <div className="idm-box">
+                  <span className="idm-label">Price</span>
+                  <span className="idm-val price">{formatCurrency(detailItem.price)}</span>
+                </div>
+                <div className="idm-box">
+                  <span className="idm-label">Cost</span>
+                  <span className="idm-val">{formatCurrency(detailItem.cost)}</span>
+                </div>
+                <div className="idm-box">
+                  <span className="idm-label">Prep Time</span>
+                  <span className="idm-val">{detailItem.prepTime} min</span>
+                </div>
+                <div className="idm-box">
+                  <span className="idm-label">Profit</span>
+                  <span className="idm-val profit">{formatCurrency(detailItem.price - detailItem.cost)}</span>
+                </div>
+              </div>
+              <div className="item-detail-stock">
+                <span className={`detail-stock-badge ${detailItem.stock === 0 ? "out" : detailItem.stock <= settings.lowStockThreshold ? "low" : "in"}`}>
+                  {detailItem.stock === 0 ? "🔴 Out of Stock" : detailItem.stock <= settings.lowStockThreshold ? `🟡 Only ${detailItem.stock} left` : `🟢 ${detailItem.stock} in stock`}
+                </span>
+              </div>
+              <button
+                className="item-detail-add"
+                disabled={detailItem.stock === 0}
+                onClick={() => { addToCart(detailItem); notify(`${detailItem.name} added to order`, "success"); setDetailItem(null); }}
+              >
+                + Add to Order
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }
