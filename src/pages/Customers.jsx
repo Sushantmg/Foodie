@@ -40,7 +40,7 @@ export default function Customers() {
     setShowModal(false);
   };
 
-  const getCustomerOrders = (custId) => orders.filter((o) => o.customerId === custId);
+  const getCustomerOrders = (custId) => (orders || []).filter((o) => o.customerId === custId);
 
   return (
     <div className="customers-page">
