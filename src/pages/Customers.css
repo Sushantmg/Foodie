@@ -49,3 +49,134 @@
 .cf-group label { font-size: 13px; font-weight: 600; }
 .cf-group input { padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; outline: none; }
 .cf-save { padding: 12px; border: none; border-radius: 10px; background: #6366f1; color: white; font-weight: 700; font-size: 15px; cursor: pointer; }
+
+.ct-history {
+  padding: 4px 10px;
+  border: none;
+  border-radius: 6px;
+  background: #eef2ff;
+  color: #6366f1;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.ct-history:hover {
+  background: #6366f1;
+  color: white;
+}
+
+.ch-container { max-height: 70vh; overflow-y: auto; }
+
+.ch-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.ch-stat {
+  text-align: center;
+  padding: 12px;
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.ch-val {
+  display: block;
+  font-size: 20px;
+  font-weight: 800;
+  color: #1a1a2e;
+}
+
+.ch-lbl {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.ch-orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ch-empty {
+  text-align: center;
+  padding: 32px;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.ch-order-card {
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 10px;
+  border-left: 3px solid #6366f1;
+}
+
+.ch-order-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.ch-order-id {
+  font-weight: 700;
+  color: #334155;
+  font-size: 13px;
+}
+
+.ch-order-status {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ch-order-status.completed { background: #d1fae5; color: #059669; }
+.ch-order-status.preparing { background: #fef3c7; color: #d97706; }
+.ch-order-status.ready { background: #dbeafe; color: #2563eb; }
+.ch-order-status.cancelled { background: #fee2e2; color: #dc2626; }
+
+.ch-order-date {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-left: auto;
+}
+
+.ch-order-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.ch-order-item {
+  padding: 2px 8px;
+  background: white;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.ch-order-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ch-order-total {
+  font-weight: 700;
+  color: #1a1a2e;
+  font-size: 14px;
+}
+
+.ch-order-type {
+  font-size: 11px;
+  color: #94a3b8;
+  text-transform: capitalize;
+}

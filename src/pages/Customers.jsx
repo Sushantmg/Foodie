@@ -6,11 +6,12 @@ import Modal from "../components/shared/Modal";
 import "./Customers.css";
 
 export default function Customers() {
-  const { customers, dispatch, notify } = useApp();
+  const { customers, orders, dispatch, notify } = useApp();
   const [showModal, setShowModal] = useState(false);
   const [editCust, setEditCust] = useState(null);
   const [form, setForm] = useState({ name: "", phone: "", email: "" });
   const [filter, setFilter] = useState("all");
+  const [historyCust, setHistoryCust] = useState(null);
 
   const filtered = filter === "all" ? customers : customers.filter((c) => c.tier === filter);
   const totalSpent = customers.reduce((s, c) => s + c.totalSpent, 0);
@@ -38,6 +39,8 @@ export default function Customers() {
     }
     setShowModal(false);
   };
+
+  const getCustomerOrders = (custId) => orders.filter((o) => o.customerId === custId);
 
   return (
     <div className="customers-page">
@@ -97,6 +100,7 @@ export default function Customers() {
               </span>
             </span>
             <span className="ct-col actions">
+              <button className="ct-history" onClick={() => setHistoryCust(c)}>Orders</button>
               <button className="ct-edit" onClick={() => openEdit(c)}>Edit</button>
               <button className="ct-delete" onClick={() => { dispatch({ type: "DELETE_CUSTOMER", payload: c.id }); notify("Customer removed", "warning"); }}>Delete</button>
             </span>
@@ -121,6 +125,54 @@ export default function Customers() {
           <button className="cf-save" onClick={handleSave}>{editCust ? "Update" : "Add Customer"}</button>
         </div>
       </Modal>
+      {historyCust && (
+        <Modal isOpen={true} onClose={() => setHistoryCust(null)} title={`${historyCust.name} — Order History`}>
+          <div className="ch-container">
+            <div className="ch-summary">
+              <div className="ch-stat">
+                <span className="ch-val">{getCustomerOrders(historyCust.id).length}</span>
+                <span className="ch-lbl">Orders</span>
+              </div>
+              <div className="ch-stat">
+                <span className="ch-val">{formatCurrency(historyCust.totalSpent)}</span>
+                <span className="ch-lbl">Total Spent</span>
+              </div>
+              <div className="ch-stat">
+                <span className="ch-val">{historyCust.visits}</span>
+                <span className="ch-lbl">Visits</span>
+              </div>
+              <div className="ch-stat">
+                <span className="ch-val">{historyCust.loyaltyPoints}</span>
+                <span className="ch-lbl">Points</span>
+              </div>
+            </div>
+            <div className="ch-orders-list">
+              {getCustomerOrders(historyCust.id).length === 0 ? (
+                <div className="ch-empty">No orders found for this customer</div>
+              ) : (
+                getCustomerOrders(historyCust.id).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map((o) => (
+                  <div key={o.id} className="ch-order-card">
+                    <div className="ch-order-top">
+                      <span className="ch-order-id">#{o.id}</span>
+                      <span className={`ch-order-status ${o.status}`}>{o.status}</span>
+                      <span className="ch-order-date">{o.createdAt}</span>
+                    </div>
+                    <div className="ch-order-items">
+                      {o.items.map((item, i) => (
+                        <span key={i} className="ch-order-item">{item.name} x{item.quantity}</span>
+                      ))}
+                    </div>
+                    <div className="ch-order-bottom">
+                      <span className="ch-order-total">{formatCurrency(o.total)}</span>
+                      <span className="ch-order-type">{o.type}</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }
