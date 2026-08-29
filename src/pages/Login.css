@@ -309,3 +309,27 @@
     display: none;
   }
 }
+
+.login-version {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 3px 10px;
+  background: #6366f1;
+  color: white;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-version {
+  margin-top: 8px;
+  padding: 3px 8px;
+  background: #eef2ff;
+  color: #6366f1;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.5px;
+}

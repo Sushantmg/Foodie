@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useApp } from "../context/AppContext";
+import { APP_VERSION } from "../utils/version";
 import "./Login.css";
 
 export default function Login() {
@@ -32,6 +33,7 @@ export default function Login() {
             <span className="brand-icon">🍽️</span>
             <h1>FoodiePOS</h1>
             <p>Restaurant Management System</p>
+            <span className="login-version">v{APP_VERSION}</span>
           </div>
           <div className="login-features">
             <div className="feature">

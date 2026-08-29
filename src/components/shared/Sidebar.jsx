@@ -1,5 +1,6 @@
 
 import { useApp } from "../../context/AppContext";
+import { APP_VERSION } from "../../utils/version";
 import "./Sidebar.css";
 
 const navItems = [
@@ -58,6 +59,7 @@ export default function Sidebar({ collapsed, onToggle }) {
             <span className="info-label">Restaurant</span>
             <span className="info-value">{settings.restaurantName}</span>
           </div>
+          <div className="sidebar-version">v{APP_VERSION}</div>
         </div>
       )}
     </aside>
