@@ -113,9 +113,9 @@
   cursor: pointer;
   transition: all 0.2s ease;
   border: 2px solid #f1f5f9;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
+  overflow: visible;
 }
 
 .pos-item:hover {
@@ -130,6 +130,8 @@
   padding: 20px 0 12px;
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   border-bottom: 1px solid #f1f5f9;
+  border-radius: 13px 13px 0 0;
+  flex-shrink: 0;
 }
 
 .pos-item-img {
@@ -168,6 +170,9 @@
   line-height: 1.35;
   overflow: visible;
   word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  min-height: 19px;
 }
 
 .pos-item-info p {
@@ -177,7 +182,10 @@
   line-height: 1.45;
   display: block;
   overflow: visible;
+  overflow-wrap: anywhere;
+  white-space: normal;
   flex: 1;
+  min-height: 17px;
 }
 
 .pos-item-bottom {
