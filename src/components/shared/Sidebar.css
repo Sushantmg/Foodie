@@ -140,3 +140,20 @@
   color: #cbd5e1;
   font-weight: 500;
 }
+
+.nav-alert {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: #ef4444;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+body.dark .nav-alert { background: #ef4444; color: white; }

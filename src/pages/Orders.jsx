@@ -87,6 +87,43 @@ export default function Orders() {
   const [orderSearch, setOrderSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
+  const handleExportCSV = () => {
+    if (orders.length === 0) {
+      notify("No orders to export", "warning");
+      return;
+    }
+    const header = ["Order ID", "Date", "Type", "Table", "Status", "Priority", "Payment", "Items", "Subtotal", "Discount", "Tax", "Total", "Staff", "Customer"];
+    const rows = orders.map((o) => [
+      o.id,
+      new Date(o.createdAt).toLocaleString(),
+      o.type,
+      o.type === "dine-in" ? `Table ${o.table}` : "-",
+      o.status,
+      o.priority || "normal",
+      o.paymentMethod || "-",
+      o.items.map((i) => `${i.name} x${i.quantity}`).join(" | "),
+      (o.subtotal || 0).toFixed(2),
+      (o.discount || 0).toFixed(2),
+      (o.tax || 0).toFixed(2),
+      (o.total || 0).toFixed(2),
+      o.createdByName || "-",
+      o.customerId || "-",
+    ]);
+    const csv = [header, ...rows]
+      .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `orders-${new Date().toISOString().split("T")[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    notify(`Exported ${orders.length} orders to CSV`, "success");
+  };
+
   const filteredOrders = useMemo(() => {
     return orders.filter((o) => {
       const matchSearch = orderSearch === "" ||
@@ -148,6 +185,9 @@ export default function Orders() {
               {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
             </button>
           ))}
+          <button className="export-btn" onClick={handleExportCSV} title="Export all orders to CSV">
+            ⬇️ Export CSV
+          </button>
         </div>
       </div>
 

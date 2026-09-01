@@ -19,10 +19,14 @@ const navItems = [
 ];
 
 export default function Sidebar({ collapsed, onToggle }) {
-  const { currentUser, activeTab, dispatch, settings } = useApp();
+  const { currentUser, activeTab, dispatch, settings, menu } = useApp();
   const filteredNav = navItems.filter((item) =>
     item.roles.includes(currentUser?.role)
   );
+
+  const lowStockCount = menu.filter(
+    (m) => m.available && m.stock !== undefined && m.stock <= settings.lowStockThreshold
+  ).length;
 
   return (
     <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
@@ -46,6 +50,11 @@ export default function Sidebar({ collapsed, onToggle }) {
             {!collapsed && (
               <>
                 <span className="nav-label">{item.label}</span>
+                {item.id === "inventory" && lowStockCount > 0 && (
+                  <span className="nav-alert" title={`${lowStockCount} item(s) low on stock`}>
+                    {lowStockCount}
+                  </span>
+                )}
                 {item.shortcut && <span className="nav-shortcut">{item.shortcut}</span>}
               </>
             )}

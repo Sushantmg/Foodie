@@ -1,10 +1,77 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useApp } from "../context/AppContext";
 import { modifiers } from "../data/menuData";
-import { formatCurrency } from "../utils/helpers";
+import { formatCurrency, formatTime } from "../utils/helpers";
 import { playOrderPlaced } from "../utils/sounds";
 import Modal from "../components/shared/Modal";
 import "./POS.css";
+
+function printReceipt() {
+  const printContent = document.querySelector(".print-receipt-area");
+  if (!printContent) { window.print(); return; }
+  const original = document.body.innerHTML;
+  document.body.innerHTML = printContent.outerHTML;
+  window.print();
+  document.body.innerHTML = original;
+  window.location.reload();
+}
+
+function Receipt({ order, settings, onClose }) {
+  return (
+    <div className="pos-receipt">
+      <div className="print-receipt-area">
+        <div className="receipt-paper">
+          <div className="receipt-center">
+            <span className="receipt-logo">🍽️</span>
+            <h3>{settings.restaurantName}</h3>
+            <p>{settings.address}</p>
+            <p>{settings.phone}</p>
+          </div>
+          <div className="receipt-divider">{"─".repeat(36)}</div>
+          <div className="receipt-row">
+            <span>Order #{order.id.slice(-4).toUpperCase()}</span>
+            <span>{formatTime(order.createdAt)}</span>
+          </div>
+          <div className="receipt-row">
+            <span>Type:</span>
+            <span>{order.type === "dine-in" ? `Dine-In (Table ${order.table})` : order.type}</span>
+          </div>
+          <div className="receipt-row">
+            <span>Staff:</span>
+            <span>{order.createdByName}</span>
+          </div>
+          <div className="receipt-divider">{"─".repeat(36)}</div>
+          <div className="receipt-items">
+            {order.items.map((item, idx) => (
+              <div key={idx} className="receipt-item">
+                <span>{item.name} x{item.quantity}</span>
+                <span>{formatCurrency(item.price * item.quantity)}</span>
+              </div>
+            ))}
+          </div>
+          <div className="receipt-divider">{"─".repeat(36)}</div>
+          <div className="receipt-row"><span>Subtotal</span><span>{formatCurrency(order.subtotal)}</span></div>
+          {order.discount > 0 && <div className="receipt-row"><span>Discount</span><span>-{formatCurrency(order.discount)}</span></div>}
+          <div className="receipt-row"><span>Tax</span><span>{formatCurrency(order.tax)}</span></div>
+          <div className="receipt-row receipt-total"><span>TOTAL</span><span>{formatCurrency(order.total)}</span></div>
+          <div className="receipt-divider">{"─".repeat(36)}</div>
+          <div className="receipt-row">
+            <span>Payment:</span>
+            <span>{order.paymentMethod?.toUpperCase()}</span>
+          </div>
+          <div className="receipt-center receipt-footer">
+            <p>{settings.receiptHeader}</p>
+            <p>{settings.receiptFooter}</p>
+          </div>
+        </div>
+      </div>
+      <div className="receipt-actions">
+        <button className="receipt-print" onClick={printReceipt}>🖨️ Print</button>
+        <button className="receipt-close" onClick={onClose}>Done</button>
+      </div>
+    </div>
+  );
+}
 
 export default function POS() {
   const {
@@ -19,12 +86,12 @@ export default function POS() {
   const [discountType, setDiscountType] = useState("fixed");
   const [selectedCustomer, setSelectedCustomer] = useState("");
   const [showModifiers, setShowModifiers] = useState(null);
-  const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderNotes, setOrderNotes] = useState("");
   const [showTables, setShowTables] = useState(false);
   const [phoneSearch, setPhoneSearch] = useState("");
   const [foundCustomer, setFoundCustomer] = useState(null);
   const [detailItem, setDetailItem] = useState(null);
+  const [receiptOrder, setReceiptOrder] = useState(null);
 
   const categories = ["All", "Appetizers", "Main Course", "Meat", "Dairy", "Desserts", "Beverages"];
 
@@ -128,35 +195,20 @@ export default function POS() {
           payload: { orderId: order.id, status: "preparing" },
         });
       }
-      setOrderPlaced(true);
       playOrderPlaced();
-      setTimeout(() => {
-        setOrderPlaced(false);
-        setShowPayment(false);
-        setDiscount(0);
-        setSelectedCustomer("");
-        setOrderNotes("");
-        setPhoneSearch("");
-        setFoundCustomer(null);
-        notify(`Order #${order.id.slice(-4).toUpperCase()} placed successfully!`);
-      }, 1500);
+      setReceiptOrder(order);
+      setShowPayment(false);
+      setDiscount(0);
+      setSelectedCustomer("");
+      setOrderNotes("");
+      setPhoneSearch("");
+      setFoundCustomer(null);
+      notify(`Order #${order.id.slice(-4).toUpperCase()} placed successfully!`);
     }
   };
 
   const occupiedTables = tables.filter((t) => t.status === "occupied").length;
   const availableTables = tables.filter((t) => t.status === "available").length;
-
-  if (orderPlaced) {
-    return (
-      <div className="pos-order-success">
-        <div className="success-content">
-          <span className="success-check">✅</span>
-          <h2>Order Placed!</h2>
-          <p>Sent to kitchen successfully</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="pos">
@@ -534,6 +586,10 @@ export default function POS() {
           </div>
         )}
       </Modal>
+
+      {receiptOrder && (
+        <Receipt order={receiptOrder} settings={settings} onClose={() => setReceiptOrder(null)} />
+      )}
     </div>
   );
 }

@@ -302,6 +302,27 @@
   background: #f1f5f9;
 }
 
+.export-btn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 8px;
+  background: #10b981;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-left: 4px;
+  white-space: nowrap;
+}
+
+.export-btn:hover {
+  background: #059669;
+}
+
+body.dark .export-btn { background: #059669; color: white; }
+body.dark .export-btn:hover { background: #047857; }
+
 .receipt-actions {
   display: flex;
   gap: 10px;
