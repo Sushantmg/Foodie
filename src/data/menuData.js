@@ -8,7 +8,7 @@ export const menuData = [
   // Main Course
   { id: 6, name: "Grilled Salmon", category: "Main Course", price: 18.99, cost: 7.50, image: "🐟", description: "Atlantic salmon with lemon butter sauce", available: true, prepTime: 20, stock: 25 },
   { id: 7, name: "Ribeye Steak", category: "Main Course", price: 24.99, cost: 10.00, image: "🥩", description: "12oz premium cut with garlic mashed potatoes", available: true, prepTime: 25, stock: 20 },
-  { id: 8, name: "Chicken Alfredo", category: "Main Course", price: 14.99, cost: 4.50, image: "🍝", description: "Creamy pasta with grilled chicken breast", available: true, prepTime: 18, stock: 30 },
+  { id: 8, name: "Chicken Alfredo", category: "Main Course", price: 14.99, cost: 4.50, image: "🍝", description: "Creamy pasta with grilled chicken breast", available: true, prepTime: 18, stock: 6 },
   { id: 9, name: "Veggie Burger", category: "Main Course", price: 12.99, cost: 3.80, image: "🍔", description: "Plant-based patty with avocado and sprouts", available: true, prepTime: 12, stock: 35 },
   { id: 10, name: "BBQ Ribs", category: "Main Course", price: 22.99, cost: 9.00, image: "🍖", description: "Slow-cooked pork ribs with BBQ glaze", available: true, prepTime: 30, stock: 15 },
   { id: 11, name: "Mushroom Risotto", category: "Main Course", price: 16.99, cost: 4.00, image: "🍄", description: "Creamy arborio rice with wild mushrooms", available: true, prepTime: 22, stock: 25 },
@@ -18,7 +18,7 @@ export const menuData = [
   { id: 26, name: "Chicken Tikka", category: "Meat", price: 15.99, cost: 5.50, image: "🍗", description: "Tandoori spiced chicken with mint chutney", available: true, prepTime: 18, stock: 30 },
   { id: 27, name: "Pulled Pork Sandwich", category: "Meat", price: 14.49, cost: 4.80, image: "🥪", description: "Slow-smoked pulled pork with coleslaw", available: true, prepTime: 10, stock: 25 },
   { id: 28, name: "Beef Tacos", category: "Meat", price: 12.99, cost: 4.00, image: "🌮", description: "Seasoned ground beef with salsa and guacamole", available: true, prepTime: 12, stock: 35 },
-  { id: 29, name: "Duck Confit", category: "Meat", price: 28.99, cost: 12.00, image: "🦆", description: "Crispy duck leg with orange glaze and potatoes", available: true, prepTime: 30, stock: 12 },
+  { id: 29, name: "Duck Confit", category: "Meat", price: 28.99, cost: 12.00, image: "🦆", description: "Crispy duck leg with orange glaze and potatoes", available: true, prepTime: 30, stock: 8 },
   // Dairy
   { id: 30, name: "Mac & Cheese", category: "Dairy", price: 10.99, cost: 3.00, image: "🧀", description: "Creamy three-cheese baked macaroni", available: true, prepTime: 15, stock: 40 },
   { id: 31, name: "Greek Yogurt Parfait", category: "Dairy", price: 7.49, cost: 2.00, image: "🥣", description: "Layered yogurt with granola and fresh berries", available: true, prepTime: 5, stock: 45 },
