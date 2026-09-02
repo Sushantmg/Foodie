@@ -117,3 +117,81 @@
 .logout-btn:hover {
   background: #fee2e2;
 }
+
+/* Live Clock */
+.live-clock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.1;
+  user-select: none;
+}
+
+.clock-time {
+  font-size: 15px;
+  font-weight: 700;
+  font-family: "SF Mono", ui-monospace, Menlo, monospace;
+  color: #1a1a2e;
+  letter-spacing: 0.5px;
+}
+
+.clock-date {
+  font-size: 10px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+body.dark .clock-time { color: #f1f5f9; }
+body.dark .clock-date { color: #94a3b8; }
+
+/* TopBar divider */
+.topbar-divider {
+  width: 1px;
+  height: 28px;
+  background: #e2e8f0;
+  flex-shrink: 0;
+}
+
+body.dark .topbar-divider { background: #334155; }
+
+/* Active Orders pill */
+.topbar-orders-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: #f1f5f9;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.topbar-orders-pill:hover { background: #e2e8f0; }
+
+.topbar-orders-pill.has-orders {
+  background: linear-gradient(135deg, #f97316 0%, #f59e0b 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+}
+
+.topbar-orders-pill.has-orders:hover {
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+  transform: translateY(-1px);
+}
+
+.pill-icon { font-size: 16px; line-height: 1; }
+
+.pill-count {
+  font-size: 12px;
+  font-weight: 800;
+  color: white;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.dark .topbar-orders-pill { background: #334155; color: #e2e8f0; }
+body.dark .topbar-orders-pill:hover { background: #475569; }
