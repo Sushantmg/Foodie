@@ -92,6 +92,7 @@ export default function POS() {
   const [foundCustomer, setFoundCustomer] = useState(null);
   const [detailItem, setDetailItem] = useState(null);
   const [receiptOrder, setReceiptOrder] = useState(null);
+  const [cashTendered, setCashTendered] = useState(0);
 
   const categories = ["All", "Appetizers", "Main Course", "Meat", "Dairy", "Desserts", "Beverages"];
 
@@ -203,6 +204,7 @@ export default function POS() {
       setOrderNotes("");
       setPhoneSearch("");
       setFoundCustomer(null);
+      setCashTendered(0);
       notify(`Order #${order.id.slice(-4).toUpperCase()} placed successfully!`);
     }
   };
@@ -482,14 +484,67 @@ export default function POS() {
                     <button
                       key={m}
                       className={`pay-method ${paymentMethod === m ? "active" : ""}`}
-                      onClick={() => setPaymentMethod(m)}
+                      onClick={() => { setPaymentMethod(m); setCashTendered(0); }}
                     >
                       {m === "cash" ? "💵 Cash" : m === "card" ? "💳 Card" : "📱 UPI"}
                     </button>
                   ))}
                 </div>
-                <button className="pay-btn" onClick={handlePlaceOrder}>
-                  Pay {formatCurrency(total)}
+
+                {paymentMethod === "cash" && (
+                  <div className="cash-drawer">
+                    <div className="cash-presets">
+                      {[5, 10, 20, 50, 100].map((amt) => (
+                        <button
+                          key={amt}
+                          className={`cash-preset ${cashTendered === amt ? "active" : ""}`}
+                          onClick={() => setCashTendered(amt)}
+                        >
+                          ${amt}
+                        </button>
+                      ))}
+                      <button
+                        className={`cash-preset exact ${cashTendered === Math.ceil(total) ? "active" : ""}`}
+                        onClick={() => setCashTendered(Math.ceil(total))}
+                      >
+                        Exact
+                      </button>
+                    </div>
+                    <div className="cash-custom">
+                      <label>Cash tendered:</label>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={cashTendered || ""}
+                        onChange={(e) => setCashTendered(Number(e.target.value))}
+                        placeholder="0.00"
+                        className="cash-input"
+                      />
+                    </div>
+                    {cashTendered >= total && cashTendered > 0 && (
+                      <div className="cash-change">
+                        <span>Change due:</span>
+                        <span className="change-amount">{formatCurrency(cashTendered - total)}</span>
+                      </div>
+                    )}
+                    {cashTendered > 0 && cashTendered < total && (
+                      <div className="cash-short">
+                        <span>Short by:</span>
+                        <span className="short-amount">{formatCurrency(total - cashTendered)}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <button
+                  className="pay-btn"
+                  onClick={handlePlaceOrder}
+                  disabled={paymentMethod === "cash" && (cashTendered <= 0 || cashTendered < total)}
+                >
+                  {paymentMethod === "cash" && cashTendered >= total
+                    ? `Pay ${formatCurrency(total)}  •  Change ${formatCurrency(cashTendered - total)}`
+                    : `Pay ${formatCurrency(total)}`}
                 </button>
                 <button className="cancel-pay" onClick={() => setShowPayment(false)}>Cancel</button>
               </div>

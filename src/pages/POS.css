@@ -1169,3 +1169,105 @@
   }
   .receipt-actions { display: none; }
 }
+
+/* ---- Cash Drawer ---- */
+.cash-drawer {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.cash-presets {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.cash-preset {
+  flex: 1;
+  min-width: 50px;
+  padding: 8px 4px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+
+.cash-preset:hover { border-color: #6366f1; color: #6366f1; }
+.cash-preset.active { background: #6366f1; border-color: #6366f1; color: white; }
+.cash-preset.exact { font-size: 11px; }
+
+body.dark .cash-drawer { background: #1e293b; border-color: #334155; }
+body.dark .cash-preset { background: #1e293b; border-color: #334155; color: #e2e8f0; }
+body.dark .cash-preset:hover { border-color: #6366f1; color: #a5b4fc; }
+body.dark .cash-preset.active { background: #6366f1; border-color: #6366f1; color: white; }
+
+.cash-custom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cash-custom label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.cash-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a2e;
+  outline: none;
+  text-align: right;
+}
+
+.cash-input:focus { border-color: #6366f1; }
+body.dark .cash-input { background: #334155; border-color: #475569; color: #f1f5f9; }
+body.dark .cash-custom label { color: #94a3b8; }
+
+.cash-change, .cash-short {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 8px;
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cash-change {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.change-amount {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.cash-short {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.short-amount {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+body.dark .cash-change { background: #064e3b; color: #6ee7b7; }
+body.dark .cash-short { background: #7f1d1d; color: #fca5a5; }
