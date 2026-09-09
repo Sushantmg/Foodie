@@ -45,6 +45,8 @@ export default function Dashboard() {
     return sum + o.items.reduce((s, item) => s + (item.cost || 0) * item.quantity, 0);
   }, 0);
 
+  const revenueTarget = settings.dailyRevenueTarget || 1000;
+
   return (
     <div className="dashboard">
       <div className="dash-welcome">
@@ -94,11 +96,11 @@ export default function Dashboard() {
             <span className="ds-bar-pct">{todayOrders.length > 0 ? Math.round((completedOrders.length / todayOrders.length) * 100) : 0}%</span>
           </div>
           <div className="ds-bar-chart">
-            <span className="ds-bar-label">Revenue Target ($1000)</span>
+            <span className="ds-bar-label">Revenue Target ({formatCurrency(revenueTarget)})</span>
             <div className="ds-bar-bg">
-              <div className="ds-bar-fill revenue" style={{ width: `${Math.min((totalRevenue / 1000) * 100, 100)}%` }} />
+              <div className="ds-bar-fill revenue" style={{ width: `${Math.min((totalRevenue / revenueTarget) * 100, 100)}%` }} />
             </div>
-            <span className="ds-bar-pct">{Math.round((totalRevenue / 1000) * 100)}%</span>
+            <span className="ds-bar-pct">{Math.round((totalRevenue / revenueTarget) * 100)}%</span>
           </div>
         </div>
       </div>
