@@ -45,6 +45,19 @@ export default function MenuMgmt() {
     dispatch({ type: "UPDATE_MENU_ITEM", payload: { ...item, available: !item.available } });
   };
 
+  const handleDuplicate = (item) => {
+    dispatch({
+      type: "ADD_MENU_ITEM",
+      payload: {
+        ...item,
+        id: generateId(),
+        name: `${item.name} (Copy)`,
+        available: true,
+      },
+    });
+    notify(`${item.name} duplicated`);
+  };
+
   return (
     <div className="menu-mgmt">
       <div className="mm-header">
@@ -91,6 +104,7 @@ export default function MenuMgmt() {
             {isManager && (
               <span className="mm-col actions">
                 <button className="mm-edit" onClick={() => openEdit(item)}>Edit</button>
+                <button className="mm-edit" onClick={() => handleDuplicate(item)}>Copy</button>
                 <button className="mm-delete" onClick={() => { dispatch({ type: "DELETE_MENU_ITEM", payload: item.id }); notify("Item deleted", "warning"); }}>Delete</button>
               </span>
             )}
