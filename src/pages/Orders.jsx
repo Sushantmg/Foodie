@@ -61,6 +61,7 @@ function ReceiptPreview({ order, settings, onClose }) {
         <div className="receipt-divider">{'─'.repeat(36)}</div>
         <div className="receipt-row"><span>Subtotal</span><span>{formatCurrency(order.subtotal)}</span></div>
         {order.discount > 0 && <div className="receipt-row"><span>Discount</span><span>-{formatCurrency(order.discount)}</span></div>}
+        {order.serviceCharge > 0 && <div className="receipt-row"><span>Service Charge</span><span>{formatCurrency(order.serviceCharge)}</span></div>}
         <div className="receipt-row"><span>Tax</span><span>{formatCurrency(order.tax)}</span></div>
         <div className="receipt-row receipt-total"><span>TOTAL</span><span>{formatCurrency(order.total)}</span></div>
         <div className="receipt-divider">{'─'.repeat(36)}</div>
