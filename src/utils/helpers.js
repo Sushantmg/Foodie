@@ -34,7 +34,13 @@ export function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2);
 }
 
-export function formatCurrency(amount, symbol = "$") {
+let activeCurrencySymbol = "$";
+
+export function setCurrencySymbol(symbol) {
+  activeCurrencySymbol = symbol || "$";
+}
+
+export function formatCurrency(amount, symbol = activeCurrencySymbol) {
   return `${symbol}${Number(amount).toFixed(2)}`;
 }
 
