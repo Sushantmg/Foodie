@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, useEffect } from "react";
-import { storage, generateId } from "../utils/helpers";
+import { storage, generateId, setCurrencySymbol } from "../utils/helpers";
 import { defaultUsers } from "../data/users";
 import { menuData } from "../data/menuData";
 import { defaultCustomers } from "../data/customers";
@@ -254,6 +254,7 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     storage.set("settings", state.settings);
+    setCurrencySymbol(state.settings.currency);
   }, [state.settings]);
 
   useEffect(() => {
@@ -324,7 +325,10 @@ export function AppProvider({ children }) {
     const discountAmount = discount;
     const taxable = subtotal - discountAmount;
     const tax = taxable * (state.settings.taxRate / 100);
-    const total = taxable + tax;
+    const serviceCharge = state.orderType === "dine-in"
+      ? taxable * (state.settings.serviceCharge / 100)
+      : 0;
+    const total = taxable + serviceCharge + tax;
 
     const order = {
       id: generateId(),
@@ -334,6 +338,7 @@ export function AppProvider({ children }) {
       })),
       subtotal,
       discount: discountAmount,
+      serviceCharge: Number(serviceCharge.toFixed(2)),
       tax,
       total,
       table: state.tableNumber,
