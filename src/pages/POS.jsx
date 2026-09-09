@@ -52,6 +52,7 @@ function Receipt({ order, settings, onClose }) {
           <div className="receipt-divider">{"─".repeat(36)}</div>
           <div className="receipt-row"><span>Subtotal</span><span>{formatCurrency(order.subtotal)}</span></div>
           {order.discount > 0 && <div className="receipt-row"><span>Discount</span><span>-{formatCurrency(order.discount)}</span></div>}
+          {order.serviceCharge > 0 && <div className="receipt-row"><span>Service Charge</span><span>{formatCurrency(order.serviceCharge)}</span></div>}
           <div className="receipt-row"><span>Tax</span><span>{formatCurrency(order.tax)}</span></div>
           <div className="receipt-row receipt-total"><span>TOTAL</span><span>{formatCurrency(order.total)}</span></div>
           <div className="receipt-divider">{"─".repeat(36)}</div>
@@ -161,7 +162,8 @@ export default function POS() {
   const discountAmount = discountType === "percent" ? subtotal * (discount / 100) : discount;
   const taxable = subtotal - discountAmount;
   const tax = taxable * (settings.taxRate / 100);
-  const total = taxable + tax;
+  const serviceCharge = orderType === "dine-in" ? taxable * (settings.serviceCharge / 100) : 0;
+  const total = taxable + serviceCharge + tax;
 
   // Keyboard shortcuts
   const handleKeyDown = useCallback((e) => {
@@ -407,6 +409,12 @@ export default function POS() {
                 <div className="sum-row">
                   <span>Discount</span>
                   <span className="discount-val">-{formatCurrency(discountAmount)}</span>
+                </div>
+              )}
+              {serviceCharge > 0 && (
+                <div className="sum-row">
+                  <span>Service ({settings.serviceCharge}%)</span>
+                  <span>{formatCurrency(serviceCharge)}</span>
                 </div>
               )}
               <div className="sum-row">
