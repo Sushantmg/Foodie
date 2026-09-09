@@ -2,6 +2,14 @@
 
 All notable changes to FoodiePOS are documented here.
 
+## [2.8.0] - 2026-09-09
+
+### Added
+- **Configurable Currency** - Currency symbol setting is now applied everywhere (POS, receipts, dashboard, reports, inventory, customers, chatbot)
+- **Service Charge** - Optional % service charge now applied to dine-in orders, shown in cart summary and receipts
+- **Configurable Daily Revenue Target** - Dashboard revenue-progress bar now uses the target set in Settings instead of a hardcoded $1000
+- **Duplicate Menu Item** - One-click "Copy" on Menu Management to clone an item for quick variations
+
 ## [3.0.0] - 2026-08-22
 
 ### Added
