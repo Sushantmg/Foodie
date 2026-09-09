@@ -68,6 +68,10 @@ export default function Settings() {
             <label>Currency Symbol</label>
             <input value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })} />
           </div>
+          <div className="setting-group">
+            <label>Daily Revenue Target ({form.currency || "$"})</label>
+            <input type="number" value={form.dailyRevenueTarget} onChange={(e) => setForm({ ...form, dailyRevenueTarget: Number(e.target.value) })} />
+          </div>
         </div>
 
         <div className="settings-section">
