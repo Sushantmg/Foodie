@@ -20,6 +20,7 @@ export const defaultSettings = {
   receiptHeader: "Thank you for dining with us!",
   receiptFooter: "Visit us at www.foodiepos.com",
   lowStockThreshold: 10,
+  dailyRevenueTarget: 1000,
   enableLoyalty: true,
   pointsPerDollar: 1,
 };
