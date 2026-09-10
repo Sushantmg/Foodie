@@ -16,13 +16,14 @@ export default function Login() {
     setError("");
     setLoading(true);
 
-    setTimeout(() => {
-      const result = login(email, password);
-      if (!result.success) {
-        setError(result.error);
-      }
+    try {
+      const result = await login(email, password);
+      if (!result.success) setError(result.error);
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   return (
