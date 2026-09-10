@@ -2,6 +2,14 @@
 
 All notable changes to FoodiePOS are documented here.
 
+## [2.9.0] - 2026-09-09
+
+### Security
+- **Hashed Passwords** - Login credentials are now salted SHA-256 hashed via Web Crypto; plaintext passwords are no longer stored (legacy plaintext accounts are auto-migrated on first login)
+- **Brute-Force Lockout** - After 5 failed login attempts the account is locked for 30 minutes with a countdown message
+- **Session Idle Timeout** - Users are automatically logged out after 30 minutes of inactivity
+- **Safe Receipt Printing** - Receipts print in an isolated iframe instead of rewriting the live document body (removes an HTML-injection vector and page reload)
+
 ## [2.8.0] - 2026-09-09
 
 ### Added
