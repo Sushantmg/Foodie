@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useApp } from "../context/AppContext";
 import { roleLabels, roleColors } from "../data/users";
 import { generateId, formatDate } from "../utils/helpers";
+import { hashPassword, generateSalt } from "../utils/security";
 import Modal from "../components/shared/Modal";
 import "./Staff.css";
 
@@ -42,18 +43,29 @@ export default function Staff() {
 
   const openEdit = (user) => {
     setEditUser(user);
-    setForm({ name: user.name, email: user.email, password: user.password, role: user.role, phone: user.phone, avatar: user.avatar });
+    setForm({ name: user.name, email: user.email, password: user.password || "", role: user.role, phone: user.phone, avatar: user.avatar });
     setShowModal(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.name || !form.email) return notify("Name and email are required", "error");
     if (!editUser && !form.password) return notify("Password is required", "error");
     if (editUser) {
-      dispatch({ type: "UPDATE_USER", payload: { ...editUser, ...form } });
+      let payload = { ...editUser, ...form };
+      if (form.password) {
+        const salt = editUser.salt || generateSalt();
+        payload = { ...payload, salt, passwordHash: await hashPassword(form.password, salt) };
+      }
+      delete payload.password;
+      dispatch({ type: "UPDATE_USER", payload });
       notify("Staff updated");
     } else {
-      dispatch({ type: "ADD_USER", payload: { id: generateId(), ...form, createdAt: new Date().toISOString().split("T")[0] } });
+      const salt = generateSalt();
+      const passwordHash = await hashPassword(form.password, salt);
+      dispatch({
+        type: "ADD_USER",
+        payload: { id: generateId(), ...form, salt, passwordHash, createdAt: new Date().toISOString().split("T")[0] },
+      });
       notify("Staff added");
     }
     setShowModal(false);
