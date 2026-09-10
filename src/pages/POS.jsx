@@ -9,11 +9,52 @@ import "./POS.css";
 function printReceipt() {
   const printContent = document.querySelector(".print-receipt-area");
   if (!printContent) { window.print(); return; }
-  const original = document.body.innerHTML;
-  document.body.innerHTML = printContent.outerHTML;
-  window.print();
-  document.body.innerHTML = original;
-  window.location.reload();
+
+  const iframe = document.createElement("iframe");
+  iframe.setAttribute("aria-hidden", "true");
+  iframe.style.position = "fixed";
+  iframe.style.right = "0";
+  iframe.style.bottom = "0";
+  iframe.style.width = "0";
+  iframe.style.height = "0";
+  iframe.style.border = "0";
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write("<!DOCTYPE html><html><head><title>Receipt</title></head><body></body></html>");
+  doc.close();
+
+  try {
+    Array.from(document.styleSheets).forEach((sheet) => {
+      const rules = sheet.cssRules;
+      if (!rules) return;
+      const css = Array.from(rules)
+        .filter((rule) => rule.cssText)
+        .map((rule) => rule.cssText)
+        .join("\n");
+      if (!css) return;
+      const style = doc.createElement("style");
+      style.textContent = css;
+      doc.head.appendChild(style);
+    });
+  } catch {
+    // ignore cross-origin stylesheets
+  }
+
+  const printBody = doc.createElement("div");
+  printBody.innerHTML = printContent.outerHTML;
+  doc.body.appendChild(printBody);
+  doc.body.style.margin = "0";
+
+  const cleanup = () => {
+    document.body.removeChild(iframe);
+  };
+  iframe.contentWindow.addEventListener("afterprint", cleanup);
+  setTimeout(cleanup, 1000);
+
+  iframe.contentWindow.focus();
+  iframe.contentWindow.print();
 }
 
 function Receipt({ order, settings, onClose }) {
