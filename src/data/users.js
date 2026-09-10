@@ -2,7 +2,8 @@ export const defaultUsers = [
   {
     id: "1",
     email: "admin@foodiepos.com",
-    password: "admin123",
+    salt: "8f3a2c9d1e4b5a6f",
+    passwordHash: "303e300f63f6a718a6be77007b89cedde6f89c23e1f11bc69c27ce5748028bca",
     name: "Super Admin",
     role: "admin",
     avatar: "👨‍💼",
@@ -12,7 +13,8 @@ export const defaultUsers = [
   {
     id: "2",
     email: "manager@foodiepos.com",
-    password: "manager123",
+    salt: "0c5e9f2a7b3d4e8c",
+    passwordHash: "63e0b4d653fb436bba729b71ce614536a193150a8cb965efc1a32fa0521de426",
     name: "John Manager",
     role: "manager",
     avatar: "👨‍🍳",
@@ -22,7 +24,8 @@ export const defaultUsers = [
   {
     id: "3",
     email: "staff@foodiepos.com",
-    password: "staff123",
+    salt: "6d2a4c8e1b9f3e5a",
+    passwordHash: "e65612f0c48b0aeeb17695bf0da263ab6742e36bfe21ab666675951118fe8808",
     name: "Jane Staff",
     role: "staff",
     avatar: "👩‍🍳",
