@@ -1,5 +1,14 @@
 import { createContext, useContext, useReducer, useEffect } from "react";
 import { storage, generateId, setCurrencySymbol } from "../utils/helpers";
+import {
+  SECURITY,
+  verifyPassword,
+  hashPassword,
+  generateSalt,
+  getRemainingLockoutMs,
+  recordFailedLogin,
+  resetLoginAttempts,
+} from "../utils/security";
 import { defaultUsers } from "../data/users";
 import { menuData } from "../data/menuData";
 import { defaultCustomers } from "../data/customers";
@@ -274,15 +283,69 @@ export function AppProvider({ children }) {
     }
   }, [state.notification]);
 
-  const login = (email, password) => {
-    const user = state.users.find(
-      (u) => u.email === email && u.password === password
-    );
-    if (user) {
-      dispatch({ type: "LOGIN", payload: user });
-      return { success: true, user };
+  // Auto-logout on inactivity
+  useEffect(() => {
+    if (!state.currentUser) return;
+
+    let timer;
+    const armTimer = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        dispatch({ type: "LOGOUT" });
+        dispatch({
+          type: "SHOW_NOTIFICATION",
+          payload: { message: "Session expired due to inactivity", type: "warning" },
+        });
+      }, SECURITY.sessionTimeoutMs);
+    };
+
+    armTimer();
+    const events = ["keydown", "mousedown", "mousemove", "touchstart", "scroll"];
+    events.forEach((event) => window.addEventListener(event, armTimer));
+    return () => {
+      clearTimeout(timer);
+      events.forEach((event) => window.removeEventListener(event, armTimer));
+    };
+  }, [state.currentUser]);
+
+  const login = async (email, password) => {
+    const lockMs = getRemainingLockoutMs();
+    if (lockMs > 0) {
+      return {
+        success: false,
+        error: `Too many failed attempts. Try again in ${Math.ceil(lockMs / 60000)} min`,
+      };
     }
-    return { success: false, error: "Invalid email or password" };
+
+    const user = state.users.find(
+      (u) => u.email?.toLowerCase() === email.trim().toLowerCase()
+    );
+
+    if (!user || !(await verifyPassword(password, user))) {
+      const { attempts, locked } = recordFailedLogin();
+      const left = Math.max(0, SECURITY.maxAttempts - attempts);
+      return {
+        success: false,
+        error: locked
+          ? `Too many failed attempts. Account locked for ${Math.ceil(SECURITY.lockoutMs / 60000)} min`
+          : `Invalid email or password (${left} ${left === 1 ? "attempt" : "attempts"} left)`,
+      };
+    }
+
+    resetLoginAttempts();
+
+    if (!user.passwordHash) {
+      const salt = generateSalt();
+      const passwordHash = await hashPassword(password, salt);
+      dispatch({
+        type: "UPDATE_USER",
+        payload: { ...user, salt, passwordHash, password: undefined },
+      });
+      dispatch({ type: "LOGIN", payload: { ...user, salt, passwordHash } });
+    } else {
+      dispatch({ type: "LOGIN", payload: user });
+    }
+    return { success: true, user };
   };
 
   const logout = () => dispatch({ type: "LOGOUT" });
