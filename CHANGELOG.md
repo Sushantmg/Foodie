@@ -2,6 +2,13 @@
 
 All notable changes to FoodiePOS are documented here.
 
+## [2.10.0] - 2026-09-10
+
+### Added
+- **Manual Table Management** - Occupy/Release tables directly from the Tables page (grid and list views), for walk-ins and table holds
+- **Data Backup & Restore** - Export all data (orders, menu, customers, staff, settings, tables) to a JSON file and import it back from Settings
+- **Storage Export Helpers** - `storage.exportAll()` / `storage.importAll()` utilities backing the new backup feature
+
 ## [2.9.0] - 2026-09-09
 
 ### Security
