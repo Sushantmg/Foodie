@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useApp } from "../context/AppContext";
 import { storage } from "../utils/helpers";
 import "./Settings.css";
@@ -7,6 +7,45 @@ export default function Settings() {
   const { settings, dispatch, notify } = useApp();
   const [form, setForm] = useState({ ...settings });
   const [showConfirm, setShowConfirm] = useState(false);
+  const importRef = useRef(null);
+
+  const handleExport = () => {
+    const backup = {
+      exportedAt: new Date().toISOString(),
+      app: "FoodiePOS",
+      data: storage.exportAll(),
+    };
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `foodiepos-backup-${new Date().toISOString().split("T")[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    notify("Backup downloaded");
+  };
+
+  const handleImport = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result);
+        const data = parsed?.data || parsed;
+        if (typeof data !== "object" || data === null || Array.isArray(data)) throw new Error("invalid");
+        const restored = storage.importAll(data);
+        if (restored) {
+          notify("Backup restored. Reloading...");
+          setTimeout(() => window.location.reload(), 1200);
+        }
+      } catch {
+        notify("Invalid backup file", "error");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
 
   const handleSave = () => {
     dispatch({ type: "UPDATE_SETTINGS", payload: form });
@@ -144,6 +183,21 @@ export default function Settings() {
 
         <div className="settings-section">
           <h3>🗄️ Data Management</h3>
+          <p style={{ fontSize: 13, color: "#64748b", marginBottom: 12 }}>
+            Back up or restore all your data (orders, menu, customers, staff, settings). Restoring overwrites current data.
+          </p>
+          <div className="backup-actions">
+            <button className="backup-btn" onClick={handleExport}>⬇️ Export Backup</button>
+            <button className="backup-btn" onClick={() => importRef.current?.click()}>⬆️ Import Backup</button>
+            <input
+              ref={importRef}
+              type="file"
+              accept=".json,application/json"
+              onChange={handleImport}
+              style={{ display: "none" }}
+            />
+          </div>
+          <hr style={{ border: "none", borderTop: "1px solid #e2e8f0", margin: "16px 0" }} />
           <p style={{ fontSize: 13, color: "#64748b", marginBottom: 12 }}>
             Reset all data to defaults. This will clear all orders, menu changes, customers, and settings.
           </p>
