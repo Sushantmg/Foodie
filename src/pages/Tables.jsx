@@ -23,12 +23,22 @@ function TableTimer({ createdAt }) {
 }
 
 export default function Tables() {
-  const { tables, dispatch, orders, notify } = useApp();
+  const { tables, dispatch, orders, notify, setTableStatus } = useApp();
   const [view, setView] = useState("grid");
 
   const getTableOrder = (table) => {
     if (!table.orderId) return null;
     return orders.find((o) => o.id === table.orderId);
+  };
+
+  const handleOccupy = (table) => {
+    setTableStatus(table.number, "occupied");
+    notify(`Table ${table.number} marked as occupied`, "warning");
+  };
+
+  const handleRelease = (table) => {
+    setTableStatus(table.number, "available");
+    notify(`Table ${table.number} released`, "info");
   };
 
   const occupiedCount = tables.filter((t) => t.status === "occupied").length;
@@ -64,7 +74,7 @@ export default function Tables() {
                   notify(`Switched to Table ${table.number}`, "info");
                 }
               }}>
-                <div className="table-icon">{table.status === "available" ? "🪑" : "🍽️"}</div>
+                <span className="table-icon">{table.status === "available" ? "🪑" : "🍽️"}</span>
                 <span className="table-number">T{table.number}</span>
                 <span className={`table-status ${table.status}`}>{table.status}</span>
                 {order && (
@@ -74,6 +84,21 @@ export default function Tables() {
                     <TableTimer createdAt={order.createdAt} />
                   </div>
                 )}
+                {table.status === "available" ? (
+                  <button
+                    className="tca-btn occupy"
+                    onClick={(e) => { e.stopPropagation(); handleOccupy(table); }}
+                  >
+                    Occupy
+                  </button>
+                ) : !order ? (
+                  <button
+                    className="tca-btn release"
+                    onClick={(e) => { e.stopPropagation(); handleRelease(table); }}
+                  >
+                    Release
+                  </button>
+                ) : null}
               </div>
             );
           })}
@@ -101,14 +126,20 @@ export default function Tables() {
                 <span className="tl-col">{order ? <TableTimer createdAt={order.createdAt} /> : "—"}</span>
                 <span className="tl-col">
                   {table.status === "available" ? (
-                    <button className="tl-action go" onClick={() => {
-                      dispatch({ type: "SET_TABLE", payload: table.number });
-                      dispatch({ type: "SET_ACTIVE_TAB", payload: "pos" });
-                    }}>Open POS</button>
+                    <>
+                      <button className="tl-action go" onClick={() => {
+                        dispatch({ type: "SET_TABLE", payload: table.number });
+                        dispatch({ type: "SET_ACTIVE_TAB", payload: "pos" });
+                      }}>Open POS</button>
+                      <button className="tl-action occupy" onClick={() => handleOccupy(table)}>Occupy</button>
+                    </>
                   ) : (
-                    <button className="tl-action view" onClick={() => {
-                      dispatch({ type: "SET_ACTIVE_TAB", payload: "orders" });
-                    }}>View Order</button>
+                    <>
+                      <button className="tl-action view" onClick={() => {
+                        dispatch({ type: "SET_ACTIVE_TAB", payload: "orders" });
+                      }}>View Order</button>
+                      {!order && <button className="tl-action release" onClick={() => handleRelease(table)}>Release</button>}
+                    </>
                   )}
                 </span>
               </div>
