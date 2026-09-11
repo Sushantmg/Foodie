@@ -91,6 +91,21 @@
 .table-icon { font-size: 28px; margin-bottom: 6px; }
 .table-number { font-size: 16px; font-weight: 700; }
 
+.tca-btn {
+  margin-top: 8px;
+  padding: 4px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tca-btn.occupy { background: #d1fae5; color: #059669; }
+.tca-btn.release { background: #e0e7ff; color: #4f46e5; }
+.tca-btn.occupy:hover { background: #a7f3d0; }
+.tca-btn.release:hover { background: #c7d2fe; }
+
 .table-status {
   padding: 2px 10px;
   border-radius: 8px;
@@ -172,3 +187,7 @@
 
 .tl-action.go { background: #d1fae5; color: #059669; }
 .tl-action.view { background: #fef3c7; color: #d97706; }
+.tl-action.occupy { background: #d1fae5; color: #059669; margin-left: 6px; }
+.tl-action.release { background: #e0e7ff; color: #4f46e5; margin-left: 6px; }
+.tl-action.occupy:hover { background: #a7f3d0; }
+.tl-action.release:hover { background: #c7d2fe; }
