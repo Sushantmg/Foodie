@@ -166,6 +166,16 @@ function appReducer(state, action) {
       return { ...state, orders: updatedOrders, tables: newTables };
     }
 
+    case "SET_TABLE_STATUS":
+      return {
+        ...state,
+        tables: state.tables.map((t) =>
+          t.number === action.payload.number
+            ? { ...t, status: action.payload.status, orderId: action.payload.orderId ?? t.orderId }
+            : t
+        ),
+      };
+
     // Users
     case "ADD_USER":
       return { ...state, users: [...state.users, action.payload] };
@@ -352,6 +362,9 @@ export function AppProvider({ children }) {
 
   const clearCart = () => dispatch({ type: "CLEAR_CART" });
 
+  const setTableStatus = (number, status) =>
+    dispatch({ type: "SET_TABLE_STATUS", payload: { number, status } });
+
   const addToCart = (item) => dispatch({ type: "ADD_TO_CART", payload: item });
 
   const removeFromCart = (itemId) => dispatch({ type: "REMOVE_FROM_CART", payload: itemId });
@@ -461,6 +474,7 @@ export function AppProvider({ children }) {
     login,
     logout,
     clearCart,
+    setTableStatus,
     addToCart,
     removeFromCart,
     notify,
