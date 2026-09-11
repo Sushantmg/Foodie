@@ -23,6 +23,27 @@ export const storage = {
     localStorage.removeItem(STORAGE_PREFIX + key);
   },
 
+  exportAll() {
+    const data = {};
+    Object.keys(localStorage)
+      .filter((k) => k.startsWith(STORAGE_PREFIX))
+      .forEach((k) => {
+        const key = k.slice(STORAGE_PREFIX.length);
+        try {
+          data[key] = JSON.parse(localStorage.getItem(k));
+        } catch {
+          data[key] = localStorage.getItem(k);
+        }
+      });
+    return data;
+  },
+
+  importAll(data) {
+    if (!data || typeof data !== "object") return false;
+    Object.entries(data).forEach(([key, value]) => this.set(key, value));
+    return true;
+  },
+
   clear() {
     Object.keys(localStorage)
       .filter((k) => k.startsWith(STORAGE_PREFIX))
