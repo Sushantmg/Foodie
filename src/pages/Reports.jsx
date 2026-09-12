@@ -4,7 +4,7 @@ import { formatCurrency } from "../utils/helpers";
 import "./Reports.css";
 
 export default function Reports() {
-  const { orders, menu, customers } = useApp();
+  const { orders, menu, customers, expenses } = useApp();
   const [dateRange, setDateRange] = useState("today");
 
   const now = new Date();
@@ -30,6 +30,17 @@ export default function Reports() {
   const profit = revenue - cost;
   const avgOrder = filtered.length ? revenue / filtered.length : 0;
   const totalTax = filtered.reduce((s, o) => s + (o.tax || 0), 0);
+
+  const weekStart = new Date(now - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+  const monthStart = new Date(now - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+  const filteredExpenses = expenses.filter((e) => {
+    if (dateRange === "today") return e.date === today;
+    if (dateRange === "week") return e.date >= weekStart;
+    if (dateRange === "month") return e.date >= monthStart;
+    return true;
+  });
+  const totalExpenses = filteredExpenses.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+  const netProfit = profit - totalExpenses;
 
   const paymentBreakdown = {};
   filtered.forEach((o) => {
@@ -101,6 +112,8 @@ export default function Reports() {
       <div className="report-cards">
         <div className="rc-card"><span className="rc-icon">💰</span><div><span className="rc-value">{formatCurrency(revenue)}</span><span className="rc-label">Revenue</span></div></div>
         <div className="rc-card"><span className="rc-icon">📈</span><div><span className="rc-value">{formatCurrency(profit)}</span><span className="rc-label">Profit</span></div></div>
+        <div className="rc-card"><span className="rc-icon">🧾</span><div><span className="rc-value">{formatCurrency(totalExpenses)}</span><span className="rc-label">Operating Expenses</span></div></div>
+        <div className="rc-card"><span className="rc-icon">💵</span><div><span className="rc-value">{formatCurrency(netProfit)}</span><span className="rc-label">Net Profit</span></div></div>
         <div className="rc-card"><span className="rc-icon">📋</span><div><span className="rc-value">{filtered.length}</span><span className="rc-label">Total Orders</span></div></div>
         <div className="rc-card"><span className="rc-icon">🎯</span><div><span className="rc-value">{formatCurrency(avgOrder)}</span><span className="rc-label">Avg Order</span></div></div>
         <div className="rc-card"><span className="rc-icon">📊</span><div><span className="rc-value">{formatCurrency(totalTax)}</span><span className="rc-label">Tax Collected</span></div></div>
