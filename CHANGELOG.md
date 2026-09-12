@@ -2,6 +2,13 @@
 
 All notable changes to FoodiePOS are documented here.
 
+## [2.11.0] - 2026-09-10
+
+### Added
+- **Expense Tracking** - New Expenses page to log operational costs (ingredients, utilities, rent, wages, marketing, etc.) with category filters, search, and daily/weekly/monthly/all-time summaries
+- **Net Profit** - Dashboard and Reports now show Net Profit (gross profit minus expenses) and Operating Expenses alongside revenue
+- **Expense Helpers** - `addExpense` / `deleteExpense` context actions with localStorage persistence and expiry of seed data
+
 ## [2.10.0] - 2026-09-10
 
 ### Added
