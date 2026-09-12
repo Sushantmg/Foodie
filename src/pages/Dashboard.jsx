@@ -3,7 +3,7 @@ import { formatCurrency, getGreeting, getToday } from "../utils/helpers";
 import "./Dashboard.css";
 
 export default function Dashboard() {
-  const { orders, menu, customers, settings, currentUser } = useApp();
+  const { orders, menu, customers, settings, currentUser, expenses } = useApp();
 
   const today = getToday();
   const todayOrders = orders.filter((o) => o.createdAt?.startsWith(today));
@@ -46,6 +46,11 @@ export default function Dashboard() {
   }, 0);
 
   const revenueTarget = settings.dailyRevenueTarget || 1000;
+
+  const todayExpenses = expenses
+    .filter((e) => e.date === today)
+    .reduce((s, e) => s + (Number(e.amount) || 0), 0);
+  const netProfit = profit - todayExpenses;
 
   return (
     <div className="dashboard">
@@ -118,6 +123,20 @@ export default function Dashboard() {
           <div className="dc-info">
             <span className="dc-value">{formatCurrency(profit)}</span>
             <span className="dc-label">Profit</span>
+          </div>
+        </div>
+        <div className="dc expenses">
+          <div className="dc-icon">🧾</div>
+          <div className="dc-info">
+            <span className="dc-value">{formatCurrency(todayExpenses)}</span>
+            <span className="dc-label">Today's Expenses</span>
+          </div>
+        </div>
+        <div className="dc net-profit">
+          <div className="dc-icon">💵</div>
+          <div className="dc-info">
+            <span className="dc-value">{formatCurrency(netProfit)}</span>
+            <span className="dc-label">Net Profit</span>
           </div>
         </div>
         <div className="dc orders-count">
