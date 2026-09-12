@@ -13,6 +13,7 @@ import MenuMgmt from "./pages/MenuMgmt";
 import Inventory from "./pages/Inventory";
 import Staff from "./pages/Staff";
 import Customers from "./pages/Customers";
+import Expenses from "./pages/Expenses";
 import Chatbot from "./pages/Chatbot";
 import Settings from "./pages/Settings";
 import KDS from "./pages/KDS";
@@ -35,6 +36,7 @@ function AppLayout() {
       case "inventory": return <Inventory />;
       case "staff": return <Staff />;
       case "customers": return <Customers />;
+      case "expenses": return <Expenses />;
       case "kds": return <KDS />;
       case "chatbot": return <Chatbot />;
       case "settings": return <Settings />;
