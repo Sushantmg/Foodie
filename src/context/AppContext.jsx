@@ -13,6 +13,7 @@ import { defaultUsers } from "../data/users";
 import { menuData } from "../data/menuData";
 import { defaultCustomers } from "../data/customers";
 import { defaultSettings } from "../data/settings";
+import { defaultExpenses } from "../data/expenses";
 
 const AppContext = createContext();
 
@@ -23,6 +24,7 @@ const initialState = {
   cart: [],
   orders: storage.get("orders", []),
   customers: storage.get("customers", defaultCustomers),
+  expenses: storage.get("expenses", defaultExpenses),
   settings: storage.get("settings", defaultSettings),
   tables: storage.get("tables", Array.from({ length: 20 }, (_, i) => ({
     id: i + 1,
@@ -227,6 +229,16 @@ function appReducer(state, action) {
         customers: state.customers.filter((c) => c.id !== action.payload),
       };
 
+    // Expenses
+    case "ADD_EXPENSE":
+      return { ...state, expenses: [action.payload, ...state.expenses] };
+
+    case "DELETE_EXPENSE":
+      return {
+        ...state,
+        expenses: state.expenses.filter((e) => e.id !== action.payload),
+      };
+
     // Settings
     case "UPDATE_SETTINGS":
       return { ...state, settings: { ...state.settings, ...action.payload } };
@@ -270,6 +282,10 @@ export function AppProvider({ children }) {
   useEffect(() => {
     storage.set("customers", state.customers);
   }, [state.customers]);
+
+  useEffect(() => {
+    storage.set("expenses", state.expenses);
+  }, [state.expenses]);
 
   useEffect(() => {
     storage.set("settings", state.settings);
@@ -364,6 +380,19 @@ export function AppProvider({ children }) {
 
   const setTableStatus = (number, status) =>
     dispatch({ type: "SET_TABLE_STATUS", payload: { number, status } });
+
+  const addExpense = (expense) => {
+    const entry = {
+      id: generateId(),
+      addedBy: state.currentUser?.name || "Unknown",
+      createdAt: new Date().toISOString(),
+      ...expense,
+    };
+    dispatch({ type: "ADD_EXPENSE", payload: entry });
+    return entry;
+  };
+
+  const deleteExpense = (id) => dispatch({ type: "DELETE_EXPENSE", payload: id });
 
   const addToCart = (item) => dispatch({ type: "ADD_TO_CART", payload: item });
 
@@ -475,6 +504,8 @@ export function AppProvider({ children }) {
     logout,
     clearCart,
     setTableStatus,
+    addExpense,
+    deleteExpense,
     addToCart,
     removeFromCart,
     notify,
