@@ -7,17 +7,21 @@ export default function Dashboard() {
 
   const today = getToday();
   const todayOrders = orders.filter((o) => o.createdAt?.startsWith(today));
-  const totalRevenue = todayOrders.reduce((sum, o) => sum + o.total, 0);
+  const saleableToday = todayOrders.filter((o) => o.status !== "refunded" && o.status !== "voided");
+  const totalRevenue = saleableToday.reduce((sum, o) => sum + o.total, 0);
+  const todayRefunds = todayOrders
+    .filter((o) => o.status === "refunded")
+    .reduce((sum, o) => sum + o.total, 0);
   const completedOrders = todayOrders.filter((o) => o.status === "completed");
   const completedRevenue = completedOrders.reduce((sum, o) => sum + o.total, 0);
   const pendingOrders = todayOrders.filter((o) => o.status === "preparing" || o.status === "ready");
-  const avgOrderValue = todayOrders.length > 0 ? totalRevenue / todayOrders.length : 0;
+  const avgOrderValue = saleableToday.length > 0 ? totalRevenue / saleableToday.length : 0;
   const totalItems = menu.reduce((sum, m) => sum + m.stock, 0);
   const lowStockItems = menu.filter((m) => m.stock <= settings.lowStockThreshold);
   const totalCustomers = customers.length;
 
   const categorySales = {};
-  todayOrders.forEach((order) => {
+  saleableToday.forEach((order) => {
     order.items.forEach((item) => {
       if (!categorySales[item.category]) categorySales[item.category] = 0;
       categorySales[item.category] += item.price * item.quantity;
@@ -25,7 +29,7 @@ export default function Dashboard() {
   });
 
   const popularItems = {};
-  todayOrders.forEach((order) => {
+  saleableToday.forEach((order) => {
     order.items.forEach((item) => {
       if (!popularItems[item.name]) popularItems[item.name] = { count: 0, revenue: 0, image: item.image };
       popularItems[item.name].count += item.quantity;
@@ -35,7 +39,7 @@ export default function Dashboard() {
   const sortedPopular = Object.entries(popularItems).sort((a, b) => b[1].count - a[1].count).slice(0, 5);
 
   const hourlySales = Array(24).fill(0);
-  todayOrders.forEach((order) => {
+  saleableToday.forEach((order) => {
     const hour = new Date(order.createdAt).getHours();
     hourlySales[hour] += order.total;
   });
@@ -137,6 +141,13 @@ export default function Dashboard() {
           <div className="dc-info">
             <span className="dc-value">{formatCurrency(netProfit)}</span>
             <span className="dc-label">Net Profit</span>
+          </div>
+        </div>
+        <div className="dc refunds">
+          <div className="dc-icon">↩️</div>
+          <div className="dc-info">
+            <span className="dc-value">{formatCurrency(todayRefunds)}</span>
+            <span className="dc-label">Refunds</span>
           </div>
         </div>
         <div className="dc orders-count">
