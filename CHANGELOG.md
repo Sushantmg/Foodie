@@ -2,6 +2,15 @@
 
 All notable changes to FoodiePOS are documented here.
 
+## [2.12.0] - 2026-09-10
+
+### Added
+- **Refund Orders** - Completed orders can now be refunded with a required reason; refunds are tracked with timestamp and staff audit trail
+- **Void Orders** - Active orders can be voided with a reason, returning items to inventory and freeing the table automatically
+- **Refund & Void Overview** - Orders page shows a combined Refunded & Voided section with reason, staff, and time for each closed order, plus new filters and stats
+- **Loyalty Reversal** - Refunding/voiding a member order reverses the loyalty points, total spent, and visit count for the customer
+- **Reporting** - Dashboard (Refunds card) and Reports (exclude refunded/voided from revenue and add Total Refunds metric) now reflect post-sale adjustments
+
 ## [2.11.0] - 2026-09-10
 
 ### Added
