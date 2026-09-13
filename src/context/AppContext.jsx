@@ -11,7 +11,7 @@ import {
 } from "../utils/security";
 import { defaultUsers } from "../data/users";
 import { menuData } from "../data/menuData";
-import { defaultCustomers } from "../data/customers";
+import { defaultCustomers, loyaltyTiers } from "../data/customers";
 import { defaultSettings } from "../data/settings";
 import { defaultExpenses } from "../data/expenses";
 
@@ -150,12 +150,12 @@ function appReducer(state, action) {
     }
 
     case "UPDATE_ORDER_STATUS": {
-      const { orderId, status } = action.payload;
+      const { orderId, status, audit } = action.payload;
       const updatedOrders = state.orders.map((o) =>
-        o.id === orderId ? { ...o, status } : o
+        o.id === orderId ? { ...o, status, ...(audit || {}) } : o
       );
       let newTables = state.tables;
-      if (status === "completed" || status === "cancelled") {
+      if (status === "completed" || status === "cancelled" || status === "refunded" || status === "voided") {
         const completedOrder = state.orders.find((o) => o.id === orderId);
         if (completedOrder) {
           newTables = state.tables.map((t) =>
@@ -394,6 +394,77 @@ export function AppProvider({ children }) {
 
   const deleteExpense = (id) => dispatch({ type: "DELETE_EXPENSE", payload: id });
 
+  const recalcTier = (points) => {
+    const tier = Object.entries(loyaltyTiers)
+      .filter(([, t]) => points >= t.minPoints)
+      .sort((a, b) => b[1].minPoints - a[1].minPoints)[0];
+    return tier ? tier[0] : "bronze";
+  };
+
+  const reverseLoyalty = (order) => {
+    const customer = state.customers.find((c) => c.id === order.customerId);
+    if (!customer) return;
+    const earned = Math.floor((order.total || 0) * state.settings.pointsPerDollar);
+    const points = Math.max(0, customer.loyaltyPoints - earned);
+    dispatch({
+      type: "UPDATE_CUSTOMER",
+      payload: {
+        ...customer,
+        loyaltyPoints: points,
+        totalSpent: Math.max(0, customer.totalSpent - order.total),
+        visits: Math.max(0, customer.visits - 1),
+        tier: recalcTier(points),
+      },
+    });
+  };
+
+  const voidOrder = (orderId, reason = "") => {
+    const order = state.orders.find((o) => o.id === orderId);
+    if (!order) return null;
+    dispatch({
+      type: "UPDATE_ORDER_STATUS",
+      payload: {
+        orderId,
+        status: "voided",
+        audit: {
+          voidReason: reason,
+          voidedBy: state.currentUser?.name || "Unknown",
+          voidedAt: new Date().toISOString(),
+        },
+      },
+    });
+    order.items.forEach((item) => {
+      const menuItem = state.menu.find((m) => m.id === item.id);
+      if (menuItem) {
+        dispatch({
+          type: "UPDATE_MENU_ITEM",
+          payload: { ...menuItem, stock: menuItem.stock + item.quantity },
+        });
+      }
+    });
+    if (order.customerId) reverseLoyalty(order);
+    return order;
+  };
+
+  const refundOrder = (orderId, reason = "") => {
+    const order = state.orders.find((o) => o.id === orderId);
+    if (!order) return null;
+    dispatch({
+      type: "UPDATE_ORDER_STATUS",
+      payload: {
+        orderId,
+        status: "refunded",
+        audit: {
+          refundReason: reason,
+          refundedBy: state.currentUser?.name || "Unknown",
+          refundedAt: new Date().toISOString(),
+        },
+      },
+    });
+    if (order.customerId) reverseLoyalty(order);
+    return order;
+  };
+
   const addToCart = (item) => dispatch({ type: "ADD_TO_CART", payload: item });
 
   const removeFromCart = (itemId) => dispatch({ type: "REMOVE_FROM_CART", payload: itemId });
@@ -506,6 +577,8 @@ export function AppProvider({ children }) {
     setTableStatus,
     addExpense,
     deleteExpense,
+    voidOrder,
+    refundOrder,
     addToCart,
     removeFromCart,
     notify,
