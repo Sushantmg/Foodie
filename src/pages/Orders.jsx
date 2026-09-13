@@ -83,10 +83,12 @@ function ReceiptPreview({ order, settings, onClose }) {
 }
 
 export default function Orders() {
-  const { orders, dispatch, notify, settings, menu } = useApp();
+  const { orders, dispatch, notify, settings, menu, voidOrder, refundOrder } = useApp();
   const [showReceipt, setShowReceipt] = useState(null);
   const [orderSearch, setOrderSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [actionOrder, setActionOrder] = useState(null);
+  const [reason, setReason] = useState("");
 
   const handleExportCSV = () => {
     if (orders.length === 0) {
@@ -138,7 +140,21 @@ export default function Orders() {
 
   const activeOrders = filteredOrders.filter((o) => o.status === "preparing" || o.status === "ready");
   const completedOrders = filteredOrders.filter((o) => o.status === "completed");
-  const cancelledOrders = filteredOrders.filter((o) => o.status === "cancelled");
+  const refundedOrders = filteredOrders.filter((o) => o.status === "refunded");
+  const voidedOrders = filteredOrders.filter((o) => o.status === "voided");
+
+  const handleActionConfirm = () => {
+    if (!actionOrder) return;
+    if (actionOrder.type === "void") {
+      voidOrder(actionOrder.order.id, reason.trim());
+      notify(`Order #${actionOrder.order.id.slice(-4).toUpperCase()} voided; stock restored`, "warning");
+    } else {
+      refundOrder(actionOrder.order.id, reason.trim());
+      notify(`Refund of ${formatCurrency(actionOrder.order.total)} processed`, "success");
+    }
+    setActionOrder(null);
+    setReason("");
+  };
 
   const handlePriority = (orderId, currentPriority) => {
     const newPriority = currentPriority === "rush" ? "normal" : "rush";
@@ -177,7 +193,7 @@ export default function Orders() {
           className="orders-search"
         />
         <div className="orders-filter-btns">
-          {["all", "preparing", "ready", "completed", "cancelled"].map((s) => (
+          {["all", "preparing", "ready", "completed", "cancelled", "refunded", "voided"].map((s) => (
             <button
               key={s}
               className={`of-btn ${statusFilter === s ? "active" : ""}`}
@@ -206,8 +222,8 @@ export default function Orders() {
           <span className="os-label">Completed</span>
         </div>
         <div className="os-card">
-          <span className="os-num cancelled">{cancelledOrders.length}</span>
-          <span className="os-label">Cancelled</span>
+          <span className="os-num refunded">{refundedOrders.length + voidedOrders.length}</span>
+          <span className="os-label">Refunded & Voided</span>
         </div>
       </div>
 
@@ -262,7 +278,7 @@ export default function Orders() {
                     {order.status === "ready" && (
                       <button className="oc-btn complete" onClick={() => handleStatus(order.id, "completed")}>Complete</button>
                     )}
-                    <button className="oc-btn cancel" onClick={() => handleStatus(order.id, "cancelled")}>Cancel</button>
+                    <button className="oc-btn void" onClick={() => { setReason(""); setActionOrder({ type: "void", order }); }}>Void</button>
                   </div>
                 </div>
               </div>
@@ -296,6 +312,7 @@ export default function Orders() {
                   <div className="oc-actions">
                     <button className="oc-btn receipt" onClick={() => setShowReceipt(order)} title="View receipt">🧾</button>
                     <button className="oc-btn reorder" onClick={() => handleReorder(order)} title="Reorder">🔄</button>
+                    <button className="oc-btn refund" onClick={() => { setReason(""); setActionOrder({ type: "refund", order }); }}>Refund</button>
                   </div>
                 </div>
               </div>
@@ -304,9 +321,69 @@ export default function Orders() {
         )}
       </div>
 
+      {(refundedOrders.length > 0 || voidedOrders.length > 0) && (
+        <div className="orders-section">
+          <h3>↩️ Refunded & Voided ({refundedOrders.length + voidedOrders.length})</h3>
+          <div className="orders-grid">
+            {[...refundedOrders, ...voidedOrders]
+              .sort((a, b) => (b.refundedAt || b.voidedAt || "").localeCompare(a.refundedAt || a.voidedAt || ""))
+              .map((order) => (
+                <div key={order.id} className={`order-card action-card ${order.status}`}>
+                  <div className="oc-header">
+                    <div className="oc-id">
+                      <span className="oc-hash">#{order.id.slice(-4).toUpperCase()}</span>
+                      <span className={`oc-status ${order.status}`}>{order.status}</span>
+                    </div>
+                    <span className="oc-total">{formatCurrency(order.total)}</span>
+                  </div>
+                  <div className="oc-action-info">
+                    <span title={order.refundReason || order.voidReason}>Reason: {order.refundReason || order.voidReason || "-"}</span>
+                    <span>By {order.refundedBy || order.voidedBy} • {formatTime(order.refundedAt || order.voidedAt)}</span>
+                  </div>
+                  <div className="oc-footer">
+                    <div className="oc-meta">
+                      <span>🕐 {formatTime(order.createdAt)}</span>
+                      <span>👤 {order.createdByName}</span>
+                    </div>
+                    <div className="oc-actions">
+                      <button className="oc-btn receipt" onClick={() => setShowReceipt(order)} title="View receipt">🧾</button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
+
       {showReceipt && (
         <Modal isOpen={true} onClose={() => setShowReceipt(null)} title="Receipt Preview" size="sm">
           <ReceiptPreview order={showReceipt} settings={settings} onClose={() => setShowReceipt(null)} />
+        </Modal>
+      )}
+
+      {actionOrder && (
+        <Modal isOpen={true} onClose={() => { setActionOrder(null); setReason(""); }} title={actionOrder.type === "void" ? "Void Order" : "Refund Order"}>
+          <div className="action-modal">
+            <p className="action-modal-text">
+              {actionOrder.type === "void"
+                ? `Void order #${actionOrder.order.id.slice(-4).toUpperCase()}? Items will be returned to inventory.`
+                : `Issue a refund of ${formatCurrency(actionOrder.order.total)} for order #${actionOrder.order.id.slice(-4).toUpperCase()}?`}
+            </p>
+            <input
+              className="reason-input"
+              type="text"
+              placeholder="Reason (required)..."
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              autoFocus
+            />
+            <div className="action-modal-btns">
+              <button className="oc-btn cancel" onClick={() => { setActionOrder(null); setReason(""); }}>Back</button>
+              <button className="oc-btn confirm" disabled={!reason.trim()} onClick={handleActionConfirm}>
+                {actionOrder.type === "void" ? "Confirm Void" : "Confirm Refund"}
+              </button>
+            </div>
+          </div>
         </Modal>
       )}
     </div>
