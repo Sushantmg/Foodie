@@ -24,12 +24,14 @@ export default function Reports() {
   };
 
   const filtered = getFilteredOrders();
-  const completedOrders = filtered.filter((o) => o.status === "completed");
-  const revenue = filtered.reduce((s, o) => s + o.total, 0);
-  const cost = filtered.reduce((s, o) => s + o.items.reduce((si, item) => si + (item.cost || 0) * item.quantity, 0), 0);
+  const valid = filtered.filter((o) => o.status !== "refunded" && o.status !== "voided");
+  const revenue = valid.reduce((s, o) => s + o.total, 0);
+  const cost = valid.reduce((s, o) => s + o.items.reduce((si, item) => si + (item.cost || 0) * item.quantity, 0), 0);
   const profit = revenue - cost;
-  const avgOrder = filtered.length ? revenue / filtered.length : 0;
-  const totalTax = filtered.reduce((s, o) => s + (o.tax || 0), 0);
+  const avgOrder = valid.length ? revenue / valid.length : 0;
+  const totalTax = valid.reduce((s, o) => s + (o.tax || 0), 0);
+  const refundedOrders = filtered.filter((o) => o.status === "refunded");
+  const totalRefunds = refundedOrders.reduce((s, o) => s + o.total, 0);
 
   const weekStart = new Date(now - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
   const monthStart = new Date(now - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
@@ -43,21 +45,21 @@ export default function Reports() {
   const netProfit = profit - totalExpenses;
 
   const paymentBreakdown = {};
-  filtered.forEach((o) => {
+  valid.forEach((o) => {
     const pm = o.paymentMethod || "cash";
     if (!paymentBreakdown[pm]) paymentBreakdown[pm] = 0;
     paymentBreakdown[pm] += o.total;
   });
 
   const orderTypeBreakdown = {};
-  filtered.forEach((o) => {
+  valid.forEach((o) => {
     if (!orderTypeBreakdown[o.type]) orderTypeBreakdown[o.type] = { count: 0, revenue: 0 };
     orderTypeBreakdown[o.type].count++;
     orderTypeBreakdown[o.type].revenue += o.total;
   });
 
   const itemSales = {};
-  filtered.forEach((o) => {
+  valid.forEach((o) => {
     o.items.forEach((item) => {
       if (!itemSales[item.name]) itemSales[item.name] = { count: 0, revenue: 0, image: item.image, cost: 0 };
       itemSales[item.name].count += item.quantity;
@@ -68,14 +70,14 @@ export default function Reports() {
   const topItems = Object.entries(itemSales).sort((a, b) => b[1].revenue - a[1].revenue);
 
   const hourlySales = Array(24).fill(0);
-  filtered.forEach((o) => {
+  valid.forEach((o) => {
     const hour = new Date(o.createdAt).getHours();
     hourlySales[hour] += o.total;
   });
   const peakHour = hourlySales.indexOf(Math.max(...hourlySales));
 
   const dailySales = {};
-  filtered.forEach((o) => {
+  valid.forEach((o) => {
     const day = o.createdAt?.split("T")[0];
     if (!dailySales[day]) dailySales[day] = 0;
     dailySales[day] += o.total;
@@ -114,7 +116,8 @@ export default function Reports() {
         <div className="rc-card"><span className="rc-icon">📈</span><div><span className="rc-value">{formatCurrency(profit)}</span><span className="rc-label">Profit</span></div></div>
         <div className="rc-card"><span className="rc-icon">🧾</span><div><span className="rc-value">{formatCurrency(totalExpenses)}</span><span className="rc-label">Operating Expenses</span></div></div>
         <div className="rc-card"><span className="rc-icon">💵</span><div><span className="rc-value">{formatCurrency(netProfit)}</span><span className="rc-label">Net Profit</span></div></div>
-        <div className="rc-card"><span className="rc-icon">📋</span><div><span className="rc-value">{filtered.length}</span><span className="rc-label">Total Orders</span></div></div>
+        <div className="rc-card"><span className="rc-icon">↩️</span><div><span className="rc-value rc-refund">{formatCurrency(totalRefunds)}</span><span className="rc-label">Refunds</span></div></div>
+        <div className="rc-card"><span className="rc-icon">📋</span><div><span className="rc-value">{valid.length}</span><span className="rc-label">Total Orders</span></div></div>
         <div className="rc-card"><span className="rc-icon">🎯</span><div><span className="rc-value">{formatCurrency(avgOrder)}</span><span className="rc-label">Avg Order</span></div></div>
         <div className="rc-card"><span className="rc-icon">📊</span><div><span className="rc-value">{formatCurrency(totalTax)}</span><span className="rc-label">Tax Collected</span></div></div>
         <div className="rc-card"><span className="rc-icon">⏰</span><div><span className="rc-value">{peakHour}:00</span><span className="rc-label">Peak Hour</span></div></div>
