@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useApp } from "../context/AppContext";
+import { useApp } from "../context/useApp";
 import { loyaltyTiers } from "../data/customers";
 import { formatCurrency, generateId } from "../utils/helpers";
 import Modal from "../components/shared/Modal";

@@ -1,4 +1,4 @@
-import { useApp } from "../../context/AppContext";
+import { useApp } from "../../context/useApp";
 import "./Notification.css";
 
 export default function Notification() {

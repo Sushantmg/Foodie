@@ -1,11 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import { useApp } from "../context/AppContext";
-import { menuData } from "../data/menuData";
+import { useApp } from "../context/useApp";
 import { formatCurrency } from "../utils/helpers";
 import "./Chatbot.css";
 
 function getAIResponse(input, context) {
-  const { orders, menu, customers, settings } = context;
+  const { orders, menu, settings } = context;
   const lower = input.toLowerCase();
 
   if (lower.match(/\b(hi|hello|hey|greetings|good|morning|evening)\b/)) {
@@ -99,7 +98,7 @@ function getAIResponse(input, context) {
 }
 
 export default function Chatbot() {
-  const { orders, menu, customers, settings } = useApp();
+  const { orders, menu, settings } = useApp();
   const [messages, setMessages] = useState([
     { id: 1, text: "Welcome to " + (settings.restaurantName || "FoodiePOS") + "! 🍽️\n\nI'm FoodieBot, your virtual assistant. How can I help you today?\n\nType 'help' to see what I can do!", sender: "bot" },
   ]);
@@ -118,7 +117,7 @@ export default function Chatbot() {
     setInput("");
 
     setTimeout(() => {
-      const response = getAIResponse(msg, { orders, menu, customers, settings });
+      const response = getAIResponse(msg, { orders, menu, settings });
       setMessages((prev) => [...prev, { id: Date.now() + 1, text: response, sender: "bot" }]);
     }, 400);
   };

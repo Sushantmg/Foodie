@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useApp } from "../context/AppContext";
+import { useApp } from "../context/useApp";
 import { formatCurrency } from "../utils/helpers";
 import "./Reports.css";
 
 export default function Reports() {
-  const { orders, menu, customers, expenses } = useApp();
+  const { orders, expenses } = useApp();
   const [dateRange, setDateRange] = useState("today");
 
   const now = new Date();

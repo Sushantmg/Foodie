@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useApp } from "../../context/AppContext";
+import { useApp } from "../../context/useApp";
 import "./TopBar.css";
 
 function LiveClock() {

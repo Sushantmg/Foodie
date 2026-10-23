@@ -1,4 +1,4 @@
-import { useApp } from "../context/AppContext";
+import { useApp } from "../context/useApp";
 import { formatCurrency, getGreeting, getToday } from "../utils/helpers";
 import "./Dashboard.css";
 

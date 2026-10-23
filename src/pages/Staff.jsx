@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useApp } from "../context/AppContext";
+import { useApp } from "../context/useApp";
 import { roleLabels, roleColors } from "../data/users";
 import { generateId, formatDate } from "../utils/helpers";
 import { hashPassword, generateSalt } from "../utils/security";
