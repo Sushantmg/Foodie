@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { AppProvider, useApp } from "./context/AppContext";
+import { AppProvider } from "./context/AppContext";
+import { useApp } from "./context/useApp";
 import Login from "./pages/Login";
 import Sidebar from "./components/shared/Sidebar";
 import TopBar from "./components/shared/TopBar";

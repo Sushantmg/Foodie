@@ -1,4 +1,5 @@
-import { createContext, useContext, useReducer, useEffect } from "react";
+import { useReducer, useEffect, useCallback } from "react";
+import { AppContext } from "./context";
 import { storage, generateId, setCurrencySymbol } from "../utils/helpers";
 import {
   SECURITY,
@@ -14,8 +15,6 @@ import { menuData } from "../data/menuData";
 import { defaultCustomers, loyaltyTiers } from "../data/customers";
 import { defaultSettings } from "../data/settings";
 import { defaultExpenses } from "../data/expenses";
-
-const AppContext = createContext();
 
 const initialState = {
   currentUser: storage.get("currentUser"),
@@ -469,9 +468,9 @@ export function AppProvider({ children }) {
 
   const removeFromCart = (itemId) => dispatch({ type: "REMOVE_FROM_CART", payload: itemId });
 
-  const notify = (message, type = "success") => {
+  const notify = useCallback((message, type = "success") => {
     dispatch({ type: "SHOW_NOTIFICATION", payload: { message, type } });
-  };
+  }, []);
 
   const getCartTotal = () => {
     const subtotal = state.cart.reduce(
@@ -591,10 +590,4 @@ export function AppProvider({ children }) {
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
-}
-
-export function useApp() {
-  const context = useContext(AppContext);
-  if (!context) throw new Error("useApp must be used within AppProvider");
-  return context;
 }
