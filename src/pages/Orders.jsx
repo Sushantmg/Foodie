@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useApp } from "../context/AppContext";
+import { useApp } from "../context/useApp";
 import { formatCurrency, formatTime } from "../utils/helpers";
 import Modal from "../components/shared/Modal";
 import { playOrderReady, playOrderCancelled } from "../utils/sounds";
@@ -9,10 +9,13 @@ function OrderTimer({ createdAt }) {
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
-    const calc = () => Math.floor((Date.now() - new Date(createdAt).getTime()) / 1000);
-    setElapsed(calc());
-    const interval = setInterval(() => setElapsed(calc()), 1000);
-    return () => clearInterval(interval);
+    const calc = () => setElapsed(Math.floor((Date.now() - new Date(createdAt).getTime()) / 1000));
+    const timeout = setTimeout(calc, 0);
+    const interval = setInterval(calc, 1000);
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
   }, [createdAt]);
 
   const mins = Math.floor(elapsed / 60);

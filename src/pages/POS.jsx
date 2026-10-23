@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useApp } from "../context/AppContext";
+import { useApp } from "../context/useApp";
 import { modifiers } from "../data/menuData";
 import { formatCurrency, formatTime } from "../utils/helpers";
 import { playOrderPlaced } from "../utils/sounds";
@@ -142,17 +142,16 @@ export default function POS() {
   const isCurrentTableOccupied = orderType === "dine-in" && currentTable?.status === "occupied";
 
   useEffect(() => {
-    if (isCurrentTableOccupied && orderType === "dine-in") {
-      const available = tables.find((t) => t.status === "available");
-      if (available) {
-        dispatch({ type: "SET_TABLE", payload: available.number });
-        notify("Table " + tableNumber + " is occupied. Switched to Table " + available.number, "warning");
-      } else {
-        dispatch({ type: "SET_ORDER_TYPE", payload: "takeaway" });
-        notify("All tables occupied. Switched to Takeaway", "warning");
-      }
+    if (!isCurrentTableOccupied) return;
+    const available = tables.find((t) => t.status === "available");
+    if (available) {
+      dispatch({ type: "SET_TABLE", payload: available.number });
+      notify(`Table ${tableNumber} is occupied. Switched to Table ${available.number}`, "warning");
+    } else {
+      dispatch({ type: "SET_ORDER_TYPE", payload: "takeaway" });
+      notify("All tables occupied. Switched to Takeaway", "warning");
     }
-  }, [isCurrentTableOccupied]);
+  }, [isCurrentTableOccupied, tables, tableNumber, dispatch, notify]);
 
   const filteredItems = menu.filter((item) => {
     const matchCat = selectedCategory === "All" || item.category === selectedCategory;

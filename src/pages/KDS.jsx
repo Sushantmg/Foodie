@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useApp } from "../context/AppContext";
-import { formatCurrency } from "../utils/helpers";
+import { useApp } from "../context/useApp";
 import { playOrderReady, playNotification } from "../utils/sounds";
 import "./KDS.css";
 
@@ -8,10 +7,13 @@ function KDSTimer({ createdAt }) {
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
-    const calc = () => Math.floor((Date.now() - new Date(createdAt).getTime()) / 1000);
-    setElapsed(calc());
-    const interval = setInterval(() => setElapsed(calc()), 1000);
-    return () => clearInterval(interval);
+    const calc = () => setElapsed(Math.floor((Date.now() - new Date(createdAt).getTime()) / 1000));
+    const timeout = setTimeout(calc, 0);
+    const interval = setInterval(calc, 1000);
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
   }, [createdAt]);
 
   const mins = Math.floor(elapsed / 60);
@@ -26,9 +28,21 @@ function KDSTimer({ createdAt }) {
 }
 
 export default function KDS() {
-  const { orders, dispatch, notify, settings } = useApp();
+  const { orders, dispatch, notify } = useApp();
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [now, setNow] = useState(0);
+
+  useEffect(() => {
+    if (!autoRefresh) return;
+    const tick = () => setNow(Date.now());
+    const timeout = setTimeout(tick, 0);
+    const interval = setInterval(tick, 15000);
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
+  }, [autoRefresh]);
 
   const activeOrders = useMemo(() =>
     orders
@@ -56,8 +70,8 @@ export default function KDS() {
     if (newPriority === "rush") notify("Order marked as RUSH!", "warning");
   };
 
-  const averageWait = preparingOrders.length > 0
-    ? Math.round(preparingOrders.reduce((sum, o) => sum + (Date.now() - new Date(o.createdAt).getTime()) / 60000, 0) / preparingOrders.length)
+  const averageWait = preparingOrders.length > 0 && now > 0
+    ? Math.round(preparingOrders.reduce((sum, o) => sum + (now - new Date(o.createdAt).getTime()) / 60000, 0) / preparingOrders.length)
     : 0;
 
   return (

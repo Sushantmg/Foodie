@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useApp } from "../context/AppContext";
+import { useApp } from "../context/useApp";
 import { expenseCategories, categoryColors } from "../data/expenses";
 import { formatCurrency, getToday, formatDate } from "../utils/helpers";
 import Modal from "../components/shared/Modal";
@@ -18,7 +18,13 @@ export default function Expenses() {
   });
 
   const today = getToday();
-  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+  const weekAgo = useMemo(() => {
+    const d = new Date(`${today}T00:00:00`);
+    d.setDate(d.getDate() - 7);
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${d.getFullYear()}-${month}-${day}`;
+  }, [today]);
   const monthKey = today.slice(0, 7);
 
   const summary = useMemo(() => {
