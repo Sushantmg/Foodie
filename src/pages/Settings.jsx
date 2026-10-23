@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useApp } from "../context/AppContext";
+import { useApp } from "../context/useApp";
 import { storage } from "../utils/helpers";
 import "./Settings.css";
 
@@ -35,10 +35,12 @@ export default function Settings() {
         const data = parsed?.data || parsed;
         if (typeof data !== "object" || data === null || Array.isArray(data)) throw new Error("invalid");
         const restored = storage.importAll(data);
-        if (restored) {
-          notify("Backup restored. Reloading...");
-          setTimeout(() => window.location.reload(), 1200);
+        if (!restored) {
+          notify("Backup file is invalid or from a newer version", "error");
+          return;
         }
+        notify("Backup restored. Reloading...");
+        setTimeout(() => window.location.reload(), 1200);
       } catch {
         notify("Invalid backup file", "error");
       }

@@ -1,5 +1,35 @@
 const STORAGE_PREFIX = "foodiepos_";
 
+// Bump when the persisted shape changes so old backups can be migrated/rejected.
+export const STORAGE_SCHEMA_VERSION = 1;
+const SCHEMA_KEY = "__schema";
+
+const isArray = Array.isArray;
+const isPlainObject = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
+
+// Settings must at least carry the fields the app reads, otherwise a `{}` restore
+// would silently render every price as NaN.
+const isSettings = (v) =>
+  isPlainObject(v) &&
+  typeof v.restaurantName === "string" &&
+  typeof v.taxRate === "number" &&
+  typeof v.serviceCharge === "number" &&
+  typeof v.currency === "string" &&
+  isPlainObject(v.openingHours);
+
+// Shape each persisted key must have before a backup is allowed to overwrite it.
+const STORAGE_SHAPES = {
+  users: isArray,
+  menu: isArray,
+  orders: isArray,
+  customers: isArray,
+  expenses: isArray,
+  tables: isArray,
+  settings: isSettings,
+  currentUser: (v) => v === null || isPlainObject(v),
+  darkMode: (v) => typeof v === "boolean",
+};
+
 export const storage = {
   get(key, defaultValue = null) {
     try {
@@ -24,7 +54,7 @@ export const storage = {
   },
 
   exportAll() {
-    const data = {};
+    const data = { [SCHEMA_KEY]: STORAGE_SCHEMA_VERSION };
     Object.keys(localStorage)
       .filter((k) => k.startsWith(STORAGE_PREFIX))
       .forEach((k) => {
@@ -39,8 +69,26 @@ export const storage = {
   },
 
   importAll(data) {
-    if (!data || typeof data !== "object") return false;
-    Object.entries(data).forEach(([key, value]) => this.set(key, value));
+    if (!isPlainObject(data)) return false;
+
+    const { [SCHEMA_KEY]: schema, ...payload } = data;
+
+    // Backups from an unknown/newer schema cannot be trusted.
+    if (schema !== undefined) {
+      if (!Number.isInteger(schema) || schema < 1) return false;
+      if (schema > STORAGE_SCHEMA_VERSION) return false;
+    }
+
+    const known = Object.keys(STORAGE_SHAPES);
+    const entries = Object.entries(payload).filter(([key]) => known.includes(key));
+    if (entries.length === 0) return false;
+
+    // Validate everything before writing so a bad file cannot partially restore.
+    const invalid = entries.some(([key, value]) => !STORAGE_SHAPES[key](value));
+    if (invalid) return false;
+
+    entries.forEach(([key, value]) => this.set(key, value));
+    this.set(SCHEMA_KEY, STORAGE_SCHEMA_VERSION);
     return true;
   },
 
