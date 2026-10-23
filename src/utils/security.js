@@ -47,8 +47,10 @@ export function isHashed(user) {
 }
 
 export function safeCompare(a, b) {
-  const x = String(a ?? "");
-  const y = String(b ?? "");
+  // A missing value must never be treated as matching, even an empty string.
+  if (a == null || b == null) return false;
+  const x = String(a);
+  const y = String(b);
   if (x.length !== y.length) return false;
   let diff = 0;
   for (let i = 0; i < x.length; i++) {
