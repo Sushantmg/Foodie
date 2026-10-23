@@ -2,6 +2,19 @@
 
 All notable changes to FoodiePOS are documented here.
 
+## [Unreleased]
+
+### Fixed
+- **Render-time clock reads** - Order, table, and KDS timers no longer call `Date.now()` during render, and no longer set state synchronously inside effects (removes unstable values and cascading renders)
+- **POS table guard** - The occupied-table effect now declares all dependencies, removing a stale-closure risk during checkout setup
+- **KDS auto-refresh** - The Auto-Refresh toggle now actually controls the average-wait refresh instead of being cosmetic
+- **Backup restore** - Restoring an invalid or future-schema backup now shows an error instead of silently doing nothing; imports are validated before any data is written
+
+### Changed
+- **Single version source** - `package.json` is now the only place the version is defined; the sidebar, login screen, and README badge all follow it
+- **Storage schema** - Persisted backups carry a `__schema` version and are rejected if they come from a newer app version
+- **Context split** - `useApp` moved to its own module so hot reload works correctly for `AppContext.jsx`
+
 ## [2.12.0] - 2026-09-10
 
 ### Added
@@ -41,7 +54,9 @@ All notable changes to FoodiePOS are documented here.
 - **Configurable Daily Revenue Target** - Dashboard revenue-progress bar now uses the target set in Settings instead of a hardcoded $1000
 - **Duplicate Menu Item** - One-click "Copy" on Menu Management to clone an item for quick variations
 
-## [3.0.0] - 2026-08-22
+## [2.7.0] - 2026-08-22
+
+> Previously published as `3.0.0`; renumbered to keep the changelog in release order.
 
 ### Added
 - **Staff Schedule View** - Weekly shift scheduling with Morning/Afternoon/Off toggles

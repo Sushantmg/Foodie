@@ -1,6 +1,6 @@
 # Roadmap
 
-## Current Status: v3.0 - Production-Ready MVP
+## Current Status: v2.12 — Feature-complete frontend prototype
 
 ---
 
@@ -24,17 +24,17 @@
 - [x] Receipt Preview
 - [x] Staff Scheduling
 
-## Phase 2: Enhanced Operations (Planned)
+## Phase 2: Enhanced Operations (In Progress)
 
-- [ ] **Kitchen Display System (KDS)** - Dedicated kitchen screen with order queue
+- [x] **Kitchen Display System (KDS)** - Dedicated kitchen screen with order queue *(shipped 2.7)*
 - [ ] **Split Bill** - Split orders across multiple payment methods
 - [ ] **Table Merge** - Combine tables for large parties
-- [ ] **Void Orders** - Void with reason and manager approval
+- [x] **Void Orders** - Void with reason and manager approval *(shipped 2.12)*
 - [ ] **Hold/Resume Orders** - Pause orders temporarily
 - [ ] **Pre-Orders** - Schedule orders for future pickup
 - [ ] **Multi-Payment Split** - Partial cash, partial card
 - [ ] **Tipping** - Add custom tip amounts
-- [ ] **Refund Processing** - Full/partial refunds with audit trail
+- [x] **Refund Processing** - Full/partial refunds with audit trail *(shipped 2.12)*
 - [ ] **Daily Close** - End-of-day reconciliation report
 
 ## Phase 3: Advanced Analytics

@@ -3,7 +3,7 @@
   <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite"/>
   <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript"/>
   <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License"/>
-  <img src="https://img.shields.io/badge/Version-2.0-blueviolet?style=for-the-badge" alt="Version"/>
+  <img src="https://img.shields.io/badge/Version-2.12.0-blueviolet?style=for-the-badge" alt="Version"/>
 </p>
 
 <h1 align="center">🍽️ FoodiePOS</h1>
@@ -631,6 +631,13 @@ Open **http://localhost:5173** in your browser.
 
 ```bash
 npm run build
+```
+
+### Lint & Test
+
+```bash
+npm run lint   # oxlint
+npm test       # vitest (unit tests for storage, password hashing, lockout)
 ```
 
 ### Preview Production Build
